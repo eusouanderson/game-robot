@@ -18,7 +18,6 @@ class Player(pygame.sprite.Sprite):
         self.sprites.append(pygame.image.load('png/Run (8).png'))
 
         self.current_sprite = 0
-
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
@@ -38,7 +37,6 @@ class Player(pygame.sprite.Sprite):
         self.spritesL.append(pygame.image.load('png/Idle (10).png'))
 
         self.current_sprite_idle = 0
-
         self.image = self.spritesL[self.current_sprite_idle]
         self.rect1 = self.image.get_rect()
         self.rect1.topleft = [pos_x, pos_y]
@@ -58,7 +56,6 @@ class Player(pygame.sprite.Sprite):
         self.spritesD.append(pygame.image.load('png/Dead (10).png'))
 
         self.current_sprite_dead = 0
-
         self.image = self.spritesD[self.current_sprite_dead]
         self.rect2 = self.image.get_rect()
         self.rect2.topleft = [pos_x, pos_y]
@@ -79,7 +76,6 @@ class Player(pygame.sprite.Sprite):
 
 
         self.current_sprite_jump = 0
-
         self.image = self.spritesJ[self.current_sprite_jump]
         self.rect3 = self.image.get_rect()
         self.rect3.topleft = [pos_x, pos_y]
@@ -98,7 +94,6 @@ class Player(pygame.sprite.Sprite):
         self.spritesS.append(pygame.image.load('png/Slide (10).png'))
 
         self.current_sprite_slide = 0
-
         self.image = self.spritesS[self.current_sprite_slide]
         self.rect4 = self.image.get_rect()
         self.rect4.topleft = [pos_x, pos_y]
@@ -112,17 +107,38 @@ class Player(pygame.sprite.Sprite):
         self.spritesShoot.append(pygame.image.load('png/Shoot (4).png'))
 
         self.current_sprite_shoot = 0
-
         self.image = self.spritesShoot[self.current_sprite_shoot]
         self.rect5 = self.image.get_rect()
         self.rect5.topleft = [pos_x, pos_y]
+        # -------------------------------------------------------------------
+        self.melee_animation = False
+        self.spritesMelee = []
+        self.spritesMelee.append(pygame.image.load('png/Melee (1).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (2).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (3).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (4).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (5).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (6).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (7).png'))
+        self.spritesMelee.append(pygame.image.load('png/Melee (8).png'))
+
+        self.current_sprite_melee = 0
+        self.image = self.spritesMelee[self.current_sprite_melee]
+        self.rect6 = self.image.get_rect()
+        self.rect6.topleft = [pos_x, pos_y]
+
+    def melee(self):
+        self.melee_animation = True
 
     def shoot(self):
         self.shoot_animation = True
+
     def slide(self):
         self.slide_animation = True
+
     def jump(self):
         self.jump_animation = True
+
     def dead(self):
         self.dead_animation = True
 
@@ -181,6 +197,15 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_shoot = 0
                 self.shoot_animation = False
             self.image = self.spritesShoot[int(self.current_sprite_shoot)]
+            print(self.image.get_size())
+
+        if self.melee_animation:
+            self.current_sprite_melee += speed
+            if int(self.current_sprite_melee) >= len(self.spritesMelee):
+                self.current_sprite_melee = 0
+                self.melee_animation = False
+            self.image = self.spritesMelee[int(self.current_sprite_melee)]
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -190,10 +215,13 @@ screen = pygame.display.set_mode(tamanho_da_tela)
 pygame.display.set_caption('Game')
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
+
 player = Player(50, 50)
+image = pygame.transform.flip(screen, True, True)
 moving_sprites.add(player)
 
 while True:
+
 
     for event in pygame.event.get():
         player.idle()
@@ -222,6 +250,9 @@ while True:
 
             if pygame.key.get_pressed()[pygame.K_h]:
                 player.shoot()
+
+            if pygame.key.get_pressed()[pygame.K_f]:
+                player.melee()
 
     screen.fill(color)
     moving_sprites.draw(screen)
