@@ -1,64 +1,55 @@
-import pygame, sys
+import pygame
+import random
 
-class Player(pygame.sprite.Sprite):
-	def __init__(self, pos_x, pos_y):
-		super().__init__()
-		self.attack_animation = False
-		self.sprites = []
-		self.sprites.append(pygame.image.load('png/Dead (1).png'))
-		self.sprites.append(pygame.image.load('png/Dead (2).png'))
-		self.sprites.append(pygame.image.load('png/Dead (3).png'))
-		self.sprites.append(pygame.image.load('png/Dead (4).png'))
-		self.sprites.append(pygame.image.load('png/Dead (5).png'))
-		self.sprites.append(pygame.image.load('png/Dead (6).png'))
-		self.sprites.append(pygame.image.load('png/Dead (7).png'))
-		self.sprites.append(pygame.image.load('png/Dead (8).png'))
-		self.sprites.append(pygame.image.load('png/Dead (9).png'))
-		self.sprites.append(pygame.image.load('png/Dead (10).png'))
-		self.current_sprite = 0
-		self.image = self.sprites[self.current_sprite]
-		self.image = pygame.transform.scale(self.image, (10, 10))
-		self.rect = self.image.get_rect()
-		self.rect.topleft = [pos_x,pos_y]
+# GLOBAL VARIABLES
+COLOR = (255, 100, 98)
+SURFACE_COLOR = (167, 255, 100)
+WIDTH = 500
+HEIGHT = 500
 
-	def attack(self):
-		self.attack_animation = True
 
-	def update(self,speed):
-		if self.attack_animation == True:
-			self.current_sprite += speed
-			if int(self.current_sprite) >= len(self.sprites):
-				self.current_sprite = 0
-				self.attack_animation = False
+# Object class
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, color, height, width):
+        super().__init__()
 
-		self.image = self.sprites[int(self.current_sprite)]
+        self.image = pygame.Surface([width, height])
+        self.image.fill(SURFACE_COLOR)
+        self.image.set_colorkey(COLOR)
 
-# General setup
+        pygame.draw.rect(self.image, color, pygame.Rect(0, 0, width, height))
+
+        self.rect = self.image.get_rect()
+
+
 pygame.init()
+
+RED = (255, 0, 0)
+
+size = (WIDTH, HEIGHT)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Creating Sprite")
+
+all_sprites_list = pygame.sprite.Group()
+
+object_ = Sprite(RED, 50, 30)
+object_.rect.x = 200
+object_.rect.y = 300
+
+all_sprites_list.add(object_)
+
+exit = True
 clock = pygame.time.Clock()
 
-# Game Screen
-screen_width = 400
-screen_height = 400
-screen = pygame.display.set_mode((screen_width,screen_height))
-pygame.display.set_caption("Sprite Animation")
+while exit:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit = False
 
-# Creating the sprites and groups
-moving_sprites = pygame.sprite.Group()
-player = Player(50,50)
-moving_sprites.add(player)
+    all_sprites_list.update()
+    screen.fill(SURFACE_COLOR)
+    all_sprites_list.draw(screen)
+    pygame.display.flip()
+    clock.tick(60)
 
-while True:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
-		if event.type == pygame.KEYDOWN:
-			player.attack()
-
-	# Drawing
-	screen.fill((0,0,0))
-	moving_sprites.draw(screen)
-	moving_sprites.update(0.25)
-	pygame.display.flip()
-	clock.tick(60)
+pygame.quit()

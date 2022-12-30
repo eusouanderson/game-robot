@@ -1,12 +1,46 @@
 import sys, pygame
 
 
+class Objects(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+
+        self.bullet_animation = True
+        self.spritesBullet = []
+        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_000.png'))
+        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_001.png'))
+        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_002.png'))
+        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_003.png'))
+        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_004.png'))
+
+        self.current_sprite_bullet = 0
+        self.image = self.spritesBullet[self.current_sprite_bullet]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [pos_x, pos_y]
+
+    def bullet(self):
+        self.bullet_animation = True
+        self.rect.right += 150
+
+        if self.rect.right >= largura:
+            moving_sprites.remove(Objects)
+        moving_sprites.add(Objects)
+    def update(self, speed):
+
+        if self.bullet_animation:
+            self.current_sprite_bullet += speed
+            if int(self.current_sprite_bullet) >= len(self.spritesBullet):
+                self.current_sprite_bullet = 0
+            self.image = self.spritesBullet[int(self.current_sprite_bullet)]
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
         self.run_animation = False
         self.runl_animation = False
+
         self.sprites = []
         self.sprites.append(pygame.image.load('png/Run (1).png'))
         self.sprites.append(pygame.image.load('png/Run (2).png'))
@@ -19,8 +53,6 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.topleft = [pos_x, pos_y]
 
         # ------------------------------------------------------------
         self.idle_animation = False
@@ -38,8 +70,6 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_idle = 0
         self.image = self.spritesL[self.current_sprite_idle]
-        self.rect1 = self.image.get_rect()
-        self.rect1.topleft = [pos_x, pos_y]
 
         # --------------------------------------------------------------
         self.dead_animation = False
@@ -57,8 +87,6 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_dead = 0
         self.image = self.spritesD[self.current_sprite_dead]
-        self.rect2 = self.image.get_rect()
-        self.rect2.topleft = [pos_x, pos_y]
 
         # ---------------------------------------------------------------
         self.jump_animation = False
@@ -74,11 +102,24 @@ class Player(pygame.sprite.Sprite):
         self.spritesJ.append(pygame.image.load('png/Jump (9).png'))
         self.spritesJ.append(pygame.image.load('png/Jump (10).png'))
 
-
         self.current_sprite_jump = 0
         self.image = self.spritesJ[self.current_sprite_jump]
-        self.rect3 = self.image.get_rect()
-        self.rect3.topleft = [pos_x, pos_y]
+
+        # --------------------------------------------------------------
+        self.jump_melee_animation = False
+        self.spritesJM = []
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (1).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (2).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (3).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (4).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (5).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (6).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (7).png'))
+        self.spritesJM.append(pygame.image.load('png/JumpMelee (8).png'))
+
+        self.current_sprite_jumpMelee = 0
+        self.image = self.spritesJM[self.current_sprite_jumpMelee]
+
         # --------------------------------------------------------------
         self.slide_animation = False
         self.spritesS = []
@@ -95,8 +136,6 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_slide = 0
         self.image = self.spritesS[self.current_sprite_slide]
-        self.rect4 = self.image.get_rect()
-        self.rect4.topleft = [pos_x, pos_y]
 
         # ---------------------------------------------------------------
         self.shoot_animation = False
@@ -108,8 +147,7 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_shoot = 0
         self.image = self.spritesShoot[self.current_sprite_shoot]
-        self.rect5 = self.image.get_rect()
-        self.rect5.topleft = [pos_x, pos_y]
+
         # -------------------------------------------------------------------
         self.melee_animation = False
         self.spritesMelee = []
@@ -124,8 +162,10 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_melee = 0
         self.image = self.spritesMelee[self.current_sprite_melee]
-        self.rect6 = self.image.get_rect()
-        self.rect6.topleft = [pos_x, pos_y]
+        self.image = pygame.transform.scale(self.image, ([10, 10]))
+
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [pos_x, pos_y]
 
     def melee(self):
         self.melee_animation = True
@@ -135,24 +175,40 @@ class Player(pygame.sprite.Sprite):
 
     def slide(self):
         self.slide_animation = True
+        self.rect.right += 90
 
     def jump(self):
         self.jump_animation = True
+        self.rect.right += 50
+
+    def jumpMelee(self):
+        self.current_sprite_jumpMelee = True
+        self.rect.right += 50
 
     def dead(self):
         self.dead_animation = True
 
     def runL(self):
-        self.runl_animation = True
+        self.run_animation = True
+        self.rect.right -= 50
+
+    def vt(self, vt):
+        self.rect.left = vt
 
     def run(self):
         self.run_animation = True
+        passos = 0
+        if self.run_animation is True:
+            for p in self.sprites:
+                passos += 1
+            self.rect.right += passos
+            print(passos)
 
     def idle(self):
         self.idle_animation = True
 
     def update(self, speed):
-
+        self.image = pygame.transform.scale(self.image, ([10, 10]))
         if self.idle_animation:
             self.current_sprite_idle += speed
             if int(self.current_sprite_idle) >= len(self.spritesL):
@@ -197,7 +253,6 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_shoot = 0
                 self.shoot_animation = False
             self.image = self.spritesShoot[int(self.current_sprite_shoot)]
-            print(self.image.get_size())
 
         if self.melee_animation:
             self.current_sprite_melee += speed
@@ -206,22 +261,28 @@ class Player(pygame.sprite.Sprite):
                 self.melee_animation = False
             self.image = self.spritesMelee[int(self.current_sprite_melee)]
 
+        if self.jump_melee_animation:
+            self.current_sprite_jumpMelee += speed
+            if int(self.current_sprite_jumpMelee) >= len(self.current_sprite_jumpMelee):
+                self.current_sprite_jumpMelee = 0
+                self.jump_melee_animation = False
+            self.image = self.spritesJM[int(self.current_sprite_jumpMelee)]
+
 
 pygame.init()
 clock = pygame.time.Clock()
-altura, largura = 600, 600
+altura, largura = 800, 700
 tamanho_da_tela = altura, largura
 screen = pygame.display.set_mode(tamanho_da_tela)
-pygame.display.set_caption('Game')
+back = pygame.image.load('png/back.jpg')
+pygame.display.set_caption('Game Robot')
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
-
-player = Player(50, 50)
-image = pygame.transform.flip(screen, True, True)
+player = Player(0, 0)
+Objects = Objects(150, 80)
 moving_sprites.add(player)
 
 while True:
-
 
     for event in pygame.event.get():
         player.idle()
@@ -237,7 +298,9 @@ while True:
                 player.dead()
 
             if pygame.key.get_pressed()[pygame.K_a]:
-                ' player.runL()'
+                player.runL()
+                if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_SPACE]:
+                    player.vt(50)
 
             if pygame.key.get_pressed()[pygame.K_d]:
                 player.run()
@@ -245,18 +308,21 @@ while True:
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 player.jump()
 
+            if pygame.key.get_pressed()[pygame.K_SPACE]:
+                player.jumpMelee()
+
             if pygame.key.get_pressed()[pygame.KMOD_CTRL]:
                 player.slide()
 
             if pygame.key.get_pressed()[pygame.K_h]:
                 player.shoot()
+                Objects.bullet()
 
             if pygame.key.get_pressed()[pygame.K_f]:
                 player.melee()
 
-    screen.fill(color)
+    screen.blit(back, (0, 0))
     moving_sprites.draw(screen)
     moving_sprites.update(0.25)
-    screen.blit(screen, (10 * 120, 100))
     pygame.display.flip()
     clock.tick(60)
