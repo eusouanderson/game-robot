@@ -1,5 +1,5 @@
 import sys, pygame
-
+from  time import sleep
 
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -19,14 +19,21 @@ class Objects(pygame.sprite.Sprite):
         self.rect.topleft = [pos_x, pos_y]
 
     def bullet(self):
-        self.bullet_animation = True
-        self.rect.right += 150
 
-        if self.rect.right >= largura:
-            moving_sprites.remove(Objects)
-        moving_sprites.add(Objects)
+        if self.bullet_animation:
+            moving_sprites.add(objects)
+
+        for c in range(100):
+            self.rect.right += 1
+            print(c)
+        if self.rect.left == largura:
+            self.rect.left = 0
+
+
+
+
     def update(self, speed):
-
+        moving_sprites.remove(objects)
         if self.bullet_animation:
             self.current_sprite_bullet += speed
             if int(self.current_sprite_bullet) >= len(self.spritesBullet):
@@ -34,10 +41,11 @@ class Objects(pygame.sprite.Sprite):
             self.image = self.spritesBullet[int(self.current_sprite_bullet)]
 
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-
+        global arrow_img
         self.run_animation = False
         self.runl_animation = False
 
@@ -162,10 +170,12 @@ class Player(pygame.sprite.Sprite):
 
         self.current_sprite_melee = 0
         self.image = self.spritesMelee[self.current_sprite_melee]
-        self.image = pygame.transform.scale(self.image, ([10, 10]))
+
 
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
+
+
 
     def melee(self):
         self.melee_animation = True
@@ -200,15 +210,15 @@ class Player(pygame.sprite.Sprite):
         passos = 0
         if self.run_animation is True:
             for p in self.sprites:
-                passos += 1
+                passos += 20
             self.rect.right += passos
-            print(passos)
+
 
     def idle(self):
         self.idle_animation = True
 
     def update(self, speed):
-        self.image = pygame.transform.scale(self.image, ([10, 10]))
+
         if self.idle_animation:
             self.current_sprite_idle += speed
             if int(self.current_sprite_idle) >= len(self.spritesL):
@@ -270,22 +280,31 @@ class Player(pygame.sprite.Sprite):
 
 
 pygame.init()
+
 clock = pygame.time.Clock()
-altura, largura = 800, 700
-tamanho_da_tela = altura, largura
+largura, altura = 800, 768
+tamanho_da_tela = largura, altura
 screen = pygame.display.set_mode(tamanho_da_tela)
 back = pygame.image.load('png/back.jpg')
+
+back = pygame.transform.scale(back, (tamanho_da_tela))
 pygame.display.set_caption('Game Robot')
+
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
-player = Player(0, 0)
-Objects = Objects(150, 80)
+player = Player(0, 200)
+player_size = player.rect.size
+objects = Objects(0, 300)
+print(type(player_size))
+print(type(objects.rect))
 moving_sprites.add(player)
+
 
 while True:
 
     for event in pygame.event.get():
         player.idle()
+
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
@@ -299,8 +318,6 @@ while True:
 
             if pygame.key.get_pressed()[pygame.K_a]:
                 player.runL()
-                if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_SPACE]:
-                    player.vt(50)
 
             if pygame.key.get_pressed()[pygame.K_d]:
                 player.run()
@@ -316,10 +333,18 @@ while True:
 
             if pygame.key.get_pressed()[pygame.K_h]:
                 player.shoot()
-                Objects.bullet()
+                objects.bullet()
+
 
             if pygame.key.get_pressed()[pygame.K_f]:
                 player.melee()
+
+        if player.rect.right >= largura:
+            player.rect.right = +largura
+
+        if player.rect.right <= 350:
+            player.rect.right = 400
+
 
     screen.blit(back, (0, 0))
     moving_sprites.draw(screen)
