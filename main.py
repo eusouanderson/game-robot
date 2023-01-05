@@ -1,5 +1,5 @@
 import sys, pygame
-from  time import sleep
+from time import sleep
 
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -21,18 +21,18 @@ class Objects(pygame.sprite.Sprite):
         self.bullet_animation = True
         moving_sprites.add(objects)
 
-
     def update(self, speed):
-
+        moving_sprites.add(objects)
+        print(self.rect.right)
         if self.bullet_animation:
-            moving_sprites.add(objects)
+
             self.rect.right += 10
             self.current_sprite_bullet += speed
             if int(self.current_sprite_bullet) >= len(self.spritesBullet):
                 self.current_sprite_bullet = 0
             self.image = self.spritesBullet[int(self.current_sprite_bullet)]
-            if self.bullet_animation == largura:
-                return
+        if self.rect.right >= largura:
+            moving_sprites.remove()
 
 
 class Player(pygame.sprite.Sprite):
@@ -50,9 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.sprites.append(pygame.image.load('png/Run (6).png'))
         self.sprites.append(pygame.image.load('png/Run (7).png'))
         self.sprites.append(pygame.image.load('png/Run (8).png'))
-
         self.current_sprite = 0
-        self.image = self.sprites[self.current_sprite]
 
         # ------------------------------------------------------------
         self.idle_animation = False
@@ -67,9 +65,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesL.append(pygame.image.load('png/Idle (8).png'))
         self.spritesL.append(pygame.image.load('png/Idle (9).png'))
         self.spritesL.append(pygame.image.load('png/Idle (10).png'))
-
         self.current_sprite_idle = 0
-        self.image = self.spritesL[self.current_sprite_idle]
 
         # --------------------------------------------------------------
         self.dead_animation = False
@@ -84,9 +80,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesD.append(pygame.image.load('png/Dead (8).png'))
         self.spritesD.append(pygame.image.load('png/Dead (9).png'))
         self.spritesD.append(pygame.image.load('png/Dead (10).png'))
-
         self.current_sprite_dead = 0
-        self.image = self.spritesD[self.current_sprite_dead]
 
         # ---------------------------------------------------------------
         self.jump_animation = False
@@ -101,9 +95,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesJ.append(pygame.image.load('png/Jump (8).png'))
         self.spritesJ.append(pygame.image.load('png/Jump (9).png'))
         self.spritesJ.append(pygame.image.load('png/Jump (10).png'))
-
         self.current_sprite_jump = 0
-        self.image = self.spritesJ[self.current_sprite_jump]
 
         # --------------------------------------------------------------
         self.jump_melee_animation = False
@@ -116,9 +108,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesJM.append(pygame.image.load('png/JumpMelee (6).png'))
         self.spritesJM.append(pygame.image.load('png/JumpMelee (7).png'))
         self.spritesJM.append(pygame.image.load('png/JumpMelee (8).png'))
-
         self.current_sprite_jumpMelee = 0
-        self.image = self.spritesJM[self.current_sprite_jumpMelee]
 
         # --------------------------------------------------------------
         self.slide_animation = False
@@ -133,9 +123,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesS.append(pygame.image.load('png/Slide (8).png'))
         self.spritesS.append(pygame.image.load('png/Slide (9).png'))
         self.spritesS.append(pygame.image.load('png/Slide (10).png'))
-
         self.current_sprite_slide = 0
-        self.image = self.spritesS[self.current_sprite_slide]
 
         # ---------------------------------------------------------------
         self.shoot_animation = False
@@ -144,9 +132,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesShoot.append(pygame.image.load('png/Shoot (2).png'))
         self.spritesShoot.append(pygame.image.load('png/Shoot (3).png'))
         self.spritesShoot.append(pygame.image.load('png/Shoot (4).png'))
-
         self.current_sprite_shoot = 0
-        self.image = self.spritesShoot[self.current_sprite_shoot]
 
         # -------------------------------------------------------------------
         self.melee_animation = False
@@ -159,15 +145,12 @@ class Player(pygame.sprite.Sprite):
         self.spritesMelee.append(pygame.image.load('png/Melee (6).png'))
         self.spritesMelee.append(pygame.image.load('png/Melee (7).png'))
         self.spritesMelee.append(pygame.image.load('png/Melee (8).png'))
-
         self.current_sprite_melee = 0
-        self.image = self.spritesMelee[self.current_sprite_melee]
 
-
+        self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
+        self.left_animation = False
         self.rect.topleft = [pos_x, pos_y]
-
-
 
     def melee(self):
         self.melee_animation = True
@@ -197,6 +180,7 @@ class Player(pygame.sprite.Sprite):
         self.run_animation = True
         self.rect.right -= 150
 
+
     def vt(self, vt):
         self.rect.left = vt
 
@@ -209,11 +193,13 @@ class Player(pygame.sprite.Sprite):
             self.rect.right += passos
 
 
+
+
+
     def idle(self):
         self.idle_animation = True
 
     def update(self, speed):
-        print(self.rect.bottom)
 
         if self.rect.bottom >= 400:
             self.rect.bottom = 756
@@ -224,6 +210,10 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_idle = 0
                 return
             self.image = self.spritesL[int(self.current_sprite_idle)]
+
+
+        if self.left_animation:
+            self.image = pygame.transform.flip(self.image, True, False)
 
         if self.run_animation:
             self.current_sprite += speed
@@ -292,15 +282,17 @@ pygame.display.set_caption('Game Robot')
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
 player = Player(0, 200)
-player_size = player.rect.size
+player2 = Player(300, 200)
 objects = Objects(0, 300)
 moving_sprites.add(player)
+moving_sprites.add(player2)
 
 
 while True:
 
     for event in pygame.event.get():
         player.idle()
+        player2.idle()
 
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -309,6 +301,7 @@ while True:
 
             if pygame.key.get_pressed()[pygame.K_LSHIFT] and pygame.key.get_pressed()[pygame.K_d]:
                 player.slide()
+
 
             if pygame.key.get_pressed()[pygame.K_s]:
                 player.dead()
