@@ -4,8 +4,7 @@ from  time import sleep
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-
-        self.bullet_animation = True
+        self.bullet_animation = False
         self.spritesBullet = []
         self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_000.png'))
         self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_001.png'))
@@ -19,33 +18,26 @@ class Objects(pygame.sprite.Sprite):
         self.rect.topleft = [pos_x, pos_y]
 
     def bullet(self):
-
-        if self.bullet_animation:
-            moving_sprites.add(objects)
-
-        for c in range(100):
-            self.rect.right += 1
-            print(c)
-        if self.rect.left == largura:
-            self.rect.left = 0
-
-
+        self.bullet_animation = True
+        moving_sprites.add(objects)
 
 
     def update(self, speed):
-        moving_sprites.remove(objects)
+
         if self.bullet_animation:
+            moving_sprites.add(objects)
+            self.rect.right += 10
             self.current_sprite_bullet += speed
             if int(self.current_sprite_bullet) >= len(self.spritesBullet):
                 self.current_sprite_bullet = 0
             self.image = self.spritesBullet[int(self.current_sprite_bullet)]
-
+            if self.bullet_animation == largura:
+                return
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-        global arrow_img
         self.run_animation = False
         self.runl_animation = False
 
@@ -189,7 +181,10 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         self.jump_animation = True
-        self.rect.right += 50
+        self.rect.right += 150
+
+        for p in range(altura):
+            self.rect.bottom = 700
 
     def jumpMelee(self):
         self.current_sprite_jumpMelee = True
@@ -200,7 +195,7 @@ class Player(pygame.sprite.Sprite):
 
     def runL(self):
         self.run_animation = True
-        self.rect.right -= 50
+        self.rect.right -= 150
 
     def vt(self, vt):
         self.rect.left = vt
@@ -218,6 +213,10 @@ class Player(pygame.sprite.Sprite):
         self.idle_animation = True
 
     def update(self, speed):
+        print(self.rect.bottom)
+
+        if self.rect.bottom >= 400:
+            self.rect.bottom = 756
 
         if self.idle_animation:
             self.current_sprite_idle += speed
@@ -295,8 +294,6 @@ moving_sprites = pygame.sprite.Group()
 player = Player(0, 200)
 player_size = player.rect.size
 objects = Objects(0, 300)
-print(type(player_size))
-print(type(objects.rect))
 moving_sprites.add(player)
 
 
@@ -334,7 +331,6 @@ while True:
             if pygame.key.get_pressed()[pygame.K_h]:
                 player.shoot()
                 objects.bullet()
-
 
             if pygame.key.get_pressed()[pygame.K_f]:
                 player.melee()
