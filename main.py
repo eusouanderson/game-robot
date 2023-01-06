@@ -350,8 +350,8 @@ while True:
         if player.rect.right >= 1480:
             player.rect.right = 1480
 
-        if player.rect.right <= 430:
-            player.rect.right = 430
+        if player.rect.right <= 526:
+            player.rect.right = 526
 
 
     screen.blit(back, (0, 0))
