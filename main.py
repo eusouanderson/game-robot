@@ -4,6 +4,7 @@ from time import sleep
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
+        self.left_animation = None
         self.bullet_animation = False
         self.spritesBullet = []
         self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_000.png'))
@@ -15,27 +16,27 @@ class Objects(pygame.sprite.Sprite):
         self.current_sprite_bullet = 0
         self.image = self.spritesBullet[self.current_sprite_bullet]
         self.rect = self.image.get_rect()
-        self.rect.topleft = [pos_x, pos_y]
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
     def bullet(self):
         self.bullet_animation = True
         moving_sprites.add(objects)
 
     def update(self, speed):
-        moving_sprites.add(objects)
-        print(self.rect.right)
+        
+        if self.left_animation:
+            self.rect.right -= 10
         if self.bullet_animation:
-
-            self.rect.right += 10
+            self.rect.right -= 10
             self.current_sprite_bullet += speed
             if int(self.current_sprite_bullet) >= len(self.spritesBullet):
                 self.current_sprite_bullet = 0
             self.image = self.spritesBullet[int(self.current_sprite_bullet)]
-        if self.rect.right >= largura:
-            moving_sprites.remove()
-
+        self.image = pygame.transform.scale(self.image, (50, 50))
 
 class Player(pygame.sprite.Sprite):
+    
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
@@ -210,9 +211,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, speed):
 
-
         left = False
-
 
         if self.left_animation:
             left = True
@@ -299,14 +298,17 @@ moving_sprites = pygame.sprite.Group()
 player = Player(1443, 550)
 player2 = Player(0, 550)
 
-objects = Objects(0, 300)
+
+
 moving_sprites.add(player)
 moving_sprites.add(player2)
 
 
 while True:
-    print(player.rect.right)
-    print(player.rect.bottom)
+    posx = player.rect[0]
+    posy = player.rect[1]
+    objects = Objects(posx, posy)
+
     for event in pygame.event.get():
         player.idle()
         player2.idle()
