@@ -38,6 +38,7 @@ class Objects(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
+
         self.run_animation = False
         self.runl_animation = False
 
@@ -191,10 +192,6 @@ class Player(pygame.sprite.Sprite):
             for p in self.sprites:
                 passos += 20
             self.rect.right += passos
-
-
-
-
 
     def idle(self):
         self.idle_animation = True
