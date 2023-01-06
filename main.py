@@ -39,6 +39,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
+
         self.run_animation = False
         self.runl_animation = False
 
@@ -151,7 +152,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.left_animation = False
-        self.rect.topleft = [pos_x, pos_y]
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
     def melee(self):
         self.melee_animation = True
@@ -160,25 +162,34 @@ class Player(pygame.sprite.Sprite):
         self.shoot_animation = True
 
     def slide(self):
+        self.left_animation = False
         self.slide_animation = True
-        self.rect.right += 90
+        self.rect.right += 9
+
+    def jumpL(self):
+        self.jump_animation = True
+        self.left_animation = True
+        for p in range(altura):
+            self.rect.bottom = 700
 
     def jump(self):
         self.jump_animation = True
-        self.rect.right += 150
-
+        self.left_animation = False
         for p in range(altura):
-            self.rect.bottom = 700
+            self.rect.bottom = 1106
 
     def jumpMelee(self):
         self.current_sprite_jumpMelee = True
         self.rect.right += 50
+        self.left_animation = False
 
     def dead(self):
+        self.left_animation = False
         self.dead_animation = True
 
     def runL(self):
         self.run_animation = True
+        self.left_animation = True
         self.rect.right -= 150
 
 
@@ -187,10 +198,11 @@ class Player(pygame.sprite.Sprite):
 
     def run(self):
         self.run_animation = True
+        self.left_animation = False
         passos = 0
         if self.run_animation is True:
             for p in self.sprites:
-                passos += 20
+                passos += 2
             self.rect.right += passos
 
     def idle(self):
@@ -198,43 +210,43 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, speed):
 
-        if self.rect.bottom >= 400:
-            self.rect.bottom = 756
+
+        left = False
+
+
+        if self.left_animation:
+            left = True
 
         if self.idle_animation:
             self.current_sprite_idle += speed
             if int(self.current_sprite_idle) >= len(self.spritesL):
                 self.current_sprite_idle = 0
-                return
             self.image = self.spritesL[int(self.current_sprite_idle)]
-
-
-        if self.left_animation:
-            self.image = pygame.transform.flip(self.image, True, False)
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.run_animation:
             self.current_sprite += speed
             if int(self.current_sprite) >= len(self.sprites):
                 self.current_sprite = 0
                 self.run_animation = False
-
             self.image = self.sprites[int(self.current_sprite)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.dead_animation:
             self.current_sprite_dead += speed
             if int(self.current_sprite_dead) >= len(self.spritesD):
                 self.current_sprite_dead = 0
                 self.dead_animation = False
-
             self.image = self.spritesD[int(self.current_sprite_dead)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.jump_animation:
             self.current_sprite_jump += speed
             if int(self.current_sprite_jump) >= len(self.spritesJ):
                 self.current_sprite_jump = 0
                 self.jump_animation = False
-
             self.image = self.spritesJ[int(self.current_sprite_jump)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.slide_animation:
             self.current_sprite_slide += speed
@@ -242,6 +254,7 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_slide = 0
                 self.slide_animation = False
             self.image = self.spritesS[int(self.current_sprite_slide)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.shoot_animation:
             self.current_sprite_shoot += speed
@@ -249,6 +262,7 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_shoot = 0
                 self.shoot_animation = False
             self.image = self.spritesShoot[int(self.current_sprite_shoot)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.melee_animation:
             self.current_sprite_melee += speed
@@ -256,6 +270,7 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_melee = 0
                 self.melee_animation = False
             self.image = self.spritesMelee[int(self.current_sprite_melee)]
+            self.image = pygame.transform.flip(self.image, left, False)
 
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
@@ -263,12 +278,14 @@ class Player(pygame.sprite.Sprite):
                 self.current_sprite_jumpMelee = 0
                 self.jump_melee_animation = False
             self.image = self.spritesJM[int(self.current_sprite_jumpMelee)]
+            self.image = pygame.transform.flip(self.image, left, False)
+        self.image = pygame.transform.scale(self.image, (150, 150))
 
 
 pygame.init()
 
 clock = pygame.time.Clock()
-largura, altura = 800, 768
+largura, altura = 1000, 768
 tamanho_da_tela = largura, altura
 screen = pygame.display.set_mode(tamanho_da_tela)
 back = pygame.image.load('png/back.jpg')
@@ -278,15 +295,18 @@ pygame.display.set_caption('Game Robot')
 
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
-player = Player(0, 200)
-player2 = Player(300, 200)
+
+player = Player(1443, 550)
+player2 = Player(0, 550)
+
 objects = Objects(0, 300)
 moving_sprites.add(player)
 moving_sprites.add(player2)
 
 
 while True:
-
+    print(player.rect.right)
+    print(player.rect.bottom)
     for event in pygame.event.get():
         player.idle()
         player2.idle()
@@ -299,18 +319,20 @@ while True:
             if pygame.key.get_pressed()[pygame.K_LSHIFT] and pygame.key.get_pressed()[pygame.K_d]:
                 player.slide()
 
-
             if pygame.key.get_pressed()[pygame.K_s]:
                 player.dead()
+
+            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_SPACE]:
+                player.jumpL()
+
+            if pygame.key.get_pressed()[pygame.K_SPACE]:
+                player.jump()
 
             if pygame.key.get_pressed()[pygame.K_a]:
                 player.runL()
 
             if pygame.key.get_pressed()[pygame.K_d]:
                 player.run()
-
-            if pygame.key.get_pressed()[pygame.K_SPACE]:
-                player.jump()
 
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 player.jumpMelee()
@@ -325,11 +347,11 @@ while True:
             if pygame.key.get_pressed()[pygame.K_f]:
                 player.melee()
 
-        if player.rect.right >= largura:
-            player.rect.right = +largura
+        if player.rect.right >= 1480:
+            player.rect.right = 1480
 
-        if player.rect.right <= 350:
-            player.rect.right = 400
+        if player.rect.right <= 430:
+            player.rect.right = 430
 
 
     screen.blit(back, (0, 0))
