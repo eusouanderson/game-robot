@@ -4,7 +4,9 @@ from time import sleep
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-        self.left_animation = None
+
+        global pos_player
+
         self.bullet_animation = False
         self.spritesBullet = []
         self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_000.png'))
@@ -14,6 +16,7 @@ class Objects(pygame.sprite.Sprite):
         self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_004.png'))
 
         self.current_sprite_bullet = 0
+        self.left_animation = False
         self.image = self.spritesBullet[self.current_sprite_bullet]
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
@@ -24,22 +27,33 @@ class Objects(pygame.sprite.Sprite):
         moving_sprites.add(objects)
 
     def update(self, speed):
-        
-        if self.left_animation:
+        global largura
+        print(self.rect.x)
+        if pos_player:
             self.rect.right -= 10
-        if self.bullet_animation:
-            self.rect.right -= 10
+        if pos_player == False:
+            self.rect.right += 10
+
+        if self.rect.x <= 0:
+            Objects.kill(self)
+        if self.rect.x >= largura:
+            Objects.kill(self)
+
             self.current_sprite_bullet += speed
             if int(self.current_sprite_bullet) >= len(self.spritesBullet):
-                self.current_sprite_bullet = 0
-            self.image = self.spritesBullet[int(self.current_sprite_bullet)]
+                self.current_sprite_bullet = 1
+
+        self.image = self.spritesBullet[int(self.current_sprite_bullet)]
+        self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
 
+
 class Player(pygame.sprite.Sprite):
-    
+
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
+        global pos_player
 
         self.run_animation = False
         self.runl_animation = False
@@ -151,8 +165,11 @@ class Player(pygame.sprite.Sprite):
         self.current_sprite_melee = 0
 
         self.image = self.sprites[self.current_sprite]
+        self.image = pygame.transform.scale(self.image, (150, 150))
         self.rect = self.image.get_rect()
+
         self.left_animation = False
+        pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
 
@@ -170,14 +187,10 @@ class Player(pygame.sprite.Sprite):
     def jumpL(self):
         self.jump_animation = True
         self.left_animation = True
-        for p in range(altura):
-            self.rect.bottom = 700
 
     def jump(self):
         self.jump_animation = True
         self.left_animation = False
-        for p in range(altura):
-            self.rect.bottom = 1106
 
     def jumpMelee(self):
         self.current_sprite_jumpMelee = True
@@ -191,7 +204,7 @@ class Player(pygame.sprite.Sprite):
     def runL(self):
         self.run_animation = True
         self.left_animation = True
-        self.rect.right -= 150
+        self.rect.right -= 50
 
 
     def vt(self, vt):
@@ -203,7 +216,7 @@ class Player(pygame.sprite.Sprite):
         passos = 0
         if self.run_animation is True:
             for p in self.sprites:
-                passos += 2
+                passos += 5
             self.rect.right += passos
 
     def idle(self):
@@ -211,10 +224,14 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, speed):
 
+        global pos_player
+
+
         left = False
 
         if self.left_animation:
             left = True
+
 
         if self.idle_animation:
             self.current_sprite_idle += speed
@@ -228,6 +245,7 @@ class Player(pygame.sprite.Sprite):
             if int(self.current_sprite) >= len(self.sprites):
                 self.current_sprite = 0
                 self.run_animation = False
+                pos_player = left
             self.image = self.sprites[int(self.current_sprite)]
             self.image = pygame.transform.flip(self.image, left, False)
 
@@ -263,6 +281,8 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesShoot[int(self.current_sprite_shoot)]
             self.image = pygame.transform.flip(self.image, left, False)
 
+
+
         if self.melee_animation:
             self.current_sprite_melee += speed
             if int(self.current_sprite_melee) >= len(self.spritesMelee):
@@ -281,6 +301,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (150, 150))
 
 
+
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -295,7 +316,7 @@ pygame.display.set_caption('Game Robot')
 color = 255, 255, 255
 moving_sprites = pygame.sprite.Group()
 
-player = Player(1443, 550)
+player = Player(500, 550)
 player2 = Player(0, 550)
 
 
@@ -308,6 +329,9 @@ while True:
     posx = player.rect[0]
     posy = player.rect[1]
     objects = Objects(posx, posy)
+    print(objects.rect)
+    if objects.rect.colliderect(player2.rect):
+        player2.dead()
 
     for event in pygame.event.get():
         player.idle()
@@ -349,11 +373,11 @@ while True:
             if pygame.key.get_pressed()[pygame.K_f]:
                 player.melee()
 
-        if player.rect.right >= 1480:
-            player.rect.right = 1480
+        if player.rect.right >= largura:
+            player.rect.right = largura
 
-        if player.rect.right <= 526:
-            player.rect.right = 526
+        if player.rect.right <= largura - largura:
+            player.rect.right = 90
 
 
     screen.blit(back, (0, 0))
