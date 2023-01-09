@@ -1,11 +1,12 @@
 import sys, pygame
+from random import randint
 from time import sleep
 
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
+        global objects_rect
 
-        global pos_player
 
         self.bullet_animation = False
         self.spritesBullet = []
@@ -19,18 +20,29 @@ class Objects(pygame.sprite.Sprite):
         self.left_animation = False
         self.image = self.spritesBullet[self.current_sprite_bullet]
         self.rect = self.image.get_rect()
+
+
+
+
         self.rect.x = pos_x
         self.rect.y = pos_y
+
 
     def bullet(self):
         self.bullet_animation = True
         moving_sprites.add(objects)
 
     def update(self, speed):
+
         global largura
-        print(self.rect.x)
+
+        self.objectsrect = self.rect.right
+        print(self.objectsrect)
+
+
         if pos_player:
             self.rect.right -= 10
+
         if pos_player == False:
             self.rect.right += 10
 
@@ -47,7 +59,6 @@ class Objects(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
 
-
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos_x, pos_y):
@@ -57,6 +68,8 @@ class Player(pygame.sprite.Sprite):
 
         self.run_animation = False
         self.runl_animation = False
+        self.left_animation = False
+        self.jumpl_animation = False
 
         self.sprites = []
         self.sprites.append(pygame.image.load('png/Run (1).png'))
@@ -173,6 +186,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
 
+
     def melee(self):
         self.melee_animation = True
 
@@ -206,7 +220,6 @@ class Player(pygame.sprite.Sprite):
         self.left_animation = True
         self.rect.right -= 50
 
-
     def vt(self, vt):
         self.rect.left = vt
 
@@ -226,12 +239,10 @@ class Player(pygame.sprite.Sprite):
 
         global pos_player
 
-
         left = False
 
         if self.left_animation:
             left = True
-
 
         if self.idle_animation:
             self.current_sprite_idle += speed
@@ -265,6 +276,16 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesJ[int(self.current_sprite_jump)]
             self.image = pygame.transform.flip(self.image, left, False)
 
+
+        if self.jumpl_animation:
+            self.current_sprite_jump += speed
+            if int(self.current_sprite_jump) >= len(self.spritesJ):
+                self.current_sprite_jump = 0
+                self.jump_animation = False
+            self.image = self.spritesJ[int(self.current_sprite_jump)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+
         if self.slide_animation:
             self.current_sprite_slide += speed
             if int(self.current_sprite_slide) >= len(self.spritesS):
@@ -280,8 +301,6 @@ class Player(pygame.sprite.Sprite):
                 self.shoot_animation = False
             self.image = self.spritesShoot[int(self.current_sprite_shoot)]
             self.image = pygame.transform.flip(self.image, left, False)
-
-
 
         if self.melee_animation:
             self.current_sprite_melee += speed
@@ -300,8 +319,6 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
 
-
-
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -310,7 +327,8 @@ tamanho_da_tela = largura, altura
 screen = pygame.display.set_mode(tamanho_da_tela)
 back = pygame.image.load('png/back.jpg')
 
-back = pygame.transform.scale(back, (tamanho_da_tela))
+back = pygame.transform.scale(back, (1360, 768))
+print(back)
 pygame.display.set_caption('Game Robot')
 
 color = 255, 255, 255
@@ -319,19 +337,19 @@ moving_sprites = pygame.sprite.Group()
 player = Player(500, 550)
 player2 = Player(0, 550)
 
+moving_sprites.add(player, player2)
 
-
-moving_sprites.add(player)
-moving_sprites.add(player2)
 
 
 while True:
-    posx = player.rect[0]
     posy = player.rect[1]
+    posx = player.rect[0]
+
+
     objects = Objects(posx, posy)
-    print(objects.rect)
     if objects.rect.colliderect(player2.rect):
         player2.dead()
+
 
     for event in pygame.event.get():
         player.idle()
@@ -341,36 +359,35 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-
-            if pygame.key.get_pressed()[pygame.K_LSHIFT] and pygame.key.get_pressed()[pygame.K_d]:
+            control = pygame.key.get_pressed()
+            if control[pygame.K_LSHIFT] and control[pygame.K_d] or control[pygame.K_a] and control[pygame.K_LSHIFT]:
                 player.slide()
 
-            if pygame.key.get_pressed()[pygame.K_s]:
+            if control[pygame.K_s]:
                 player.dead()
 
-            if pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_SPACE]:
+
+            if control[pygame.K_a] and control[pygame.K_SPACE]:
                 player.jumpL()
 
-            if pygame.key.get_pressed()[pygame.K_SPACE]:
+            if control[pygame.K_d] and control[pygame.K_SPACE]:
                 player.jump()
 
-            if pygame.key.get_pressed()[pygame.K_a]:
+            if control[pygame.K_a]:
                 player.runL()
 
-            if pygame.key.get_pressed()[pygame.K_d]:
+
+            if control[pygame.K_d]:
                 player.run()
 
-            if pygame.key.get_pressed()[pygame.K_SPACE]:
-                player.jumpMelee()
+            if control[pygame.K_SPACE]:
+                ...
 
-            if pygame.key.get_pressed()[pygame.KMOD_CTRL]:
-                player.slide()
-
-            if pygame.key.get_pressed()[pygame.K_h]:
+            if control[pygame.K_h]:
                 player.shoot()
                 objects.bullet()
 
-            if pygame.key.get_pressed()[pygame.K_f]:
+            if control[pygame.K_f]:
                 player.melee()
 
         if player.rect.right >= largura:
