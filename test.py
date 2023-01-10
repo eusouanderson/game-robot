@@ -51,5 +51,9 @@ while exit:
     all_sprites_list.draw(screen)
     pygame.display.flip()
     clock.tick(60)
+ninja = 'png/Attack__00'
+lista = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+robot = f'png/Run ({lista[1]}).png'
+print(robot)
 
 pygame.quit()
