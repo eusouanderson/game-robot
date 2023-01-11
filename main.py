@@ -1,7 +1,4 @@
 import sys, pygame
-from random import randint
-from time import sleep
-
 
 
 class Objects(pygame.sprite.Sprite):
@@ -9,14 +6,23 @@ class Objects(pygame.sprite.Sprite):
         super().__init__()
         global objects_rect
 
-
         self.bullet_animation = False
         self.spritesBullet = []
-        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_000.png'))
-        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_001.png'))
-        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_002.png'))
-        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_003.png'))
-        self.spritesBullet.append(pygame.image.load('png/Objects/Bullet_004.png'))
+        self.spritesBullet.append(
+            pygame.image.load('png/Objects/Bullet_000.png')
+        )
+        self.spritesBullet.append(
+            pygame.image.load('png/Objects/Bullet_001.png')
+        )
+        self.spritesBullet.append(
+            pygame.image.load('png/Objects/Bullet_002.png')
+        )
+        self.spritesBullet.append(
+            pygame.image.load('png/Objects/Bullet_003.png')
+        )
+        self.spritesBullet.append(
+            pygame.image.load('png/Objects/Bullet_004.png')
+        )
 
         self.current_sprite_bullet = 0
         self.left_animation = False
@@ -34,7 +40,6 @@ class Objects(pygame.sprite.Sprite):
         global largura
 
         self.objectsrect = self.rect.right
-        print(self.objectsrect)
 
 
         if pos_player:
@@ -57,9 +62,7 @@ class Objects(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
 
-
 class Player(pygame.sprite.Sprite):
-
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
@@ -69,25 +72,55 @@ class Player(pygame.sprite.Sprite):
         self.runl_animation = False
         self.left_animation = False
         self.jumpl_animation = False
-
+        self.idle_animation = False
+        self.dead_animation = False
+        self.jump_animation = False
+        self.jump_melee_animation = False
+        self.slide_animation = False
+        self.shoot_animation = False
+        self.melee_animation = False
+        self.left_animation = False
 
         self.sprites = []
+        self.spritesL = []
+        self.spritesD = []
+        self.spritesJ = []
+        self.spritesJM = []
+        self.spritesS = []
+        self.spritesShoot = []
+        self.spritesMelee = []
         b = 1
-        for n in range(0, 8):
-            #--------------Ninja-------------------------
+
+        for r in range(0, 1):
+
+            # --------------Ninja-------------------------
+
             ninja_Attack = f'png/Attack__00{b}.png'
             ninja_Climb = f'png/Climb_00{b}.png'
             ninja_Glide = f'png/Glide_00{b}.png'
             ninja_Idle = f'png/Idle__00{b}.png'
+            ninja_Dead = f'png/Dead__00{b}.png'
             ninja_Jump = f'png/Jump__00{b}.png'
             ninja_Jump_Attack = f'png/Jump_Attack__00{b}.png'
             ninja_Jump_Throw = f'png/Jump_Throw__00{b}.png'
             ninja_Run = f'png/Run__00{b}.png'
             ninja_Slide = f'png/Slide__00{b}.png'
             ninja_Throw = f'png/Throw__00{b}.png'
-            ninja = f'png/Attack__00{b}.png'
 
-            #---------------Robot--------------------------
+            self.ninjaList = [
+                ninja_Attack,
+                ninja_Climb,
+                ninja_Glide,
+                ninja_Idle,
+                ninja_Dead,
+                ninja_Jump,
+                ninja_Jump_Attack,
+                ninja_Jump_Throw,
+                ninja_Run,
+                ninja_Slide,
+                ninja_Throw,
+            ]
+
 
             robot_Run = f'png/Run ({b}).png'
             robot_Dead = f'png/Dead ({b}).png'
@@ -100,112 +133,68 @@ class Player(pygame.sprite.Sprite):
             robot_Shoot = f'png/Shoot({b}).png'
             robot_Slide = f'png/Slide ({b}).png'
 
-
+            self.robotList = [
+                robot_Run,#0
+                robot_Dead,#1
+                robot_Idle,#2
+                robot_Jump,#3
+                robot_Jump_Melee,#4
+                robot_Jump_Shoot,#5
+                robot_Melee,#6
+                robot_Run_Shoot,#7
+                robot_Shoot,#8
+                robot_Slide,#9
+            ]
             b += 1
-            insert = robot_Jump_Melee
+            # Run
+            insert = self.alternat(r=True, value=0)
             self.sprites.append(pygame.image.load(insert))
-        self.current_sprite = 0
-
-        # ------------------------------------------------------------
-        self.idle_animation = False
-        self.spritesL = []
-        b = 1
-        for n in range(0, 8):
-            ninja = f'png/Attack__00{b}.png'
-            robot = f'png/Idle ({b}).png'
-            b += 1
-            insert = ninja
+            # Idle
+            insert = self.alternat(r=True, value=2)
             self.spritesL.append(pygame.image.load(insert))
+            # Dead
+            insert = self.alternat(r=True, value=1)
+            self.spritesD.append(pygame.image.load(insert))
+            # Jump
+            insert = self.alternat(r=True, value=3)
+            self.spritesJ.append(pygame.image.load(insert))
+            #JumpMelee
+            insert = self.alternat(r=True, value=4)
+            self.spritesJM.append(pygame.image.load(insert))
+            #Slide
+            insert = self.alternat(r=True, value=9)
+            self.spritesS.append(pygame.image.load(insert))
+            #Shoot
+            insert = self.alternat(r=True, value=4)
+            self.spritesShoot.append(pygame.image.load(insert))
+            # Melee
+            insert = self.alternat(r=True, value=6)
+            self.spritesMelee.append(pygame.image.load(insert))
+
+        self.current_sprite = 0
         self.current_sprite_idle = 0
-
-        # --------------------------------------------------------------
-        self.dead_animation = False
-        self.spritesD = []
-        self.spritesD.append(pygame.image.load('png/Dead (1).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (2).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (3).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (4).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (5).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (6).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (7).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (8).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (9).png'))
-        self.spritesD.append(pygame.image.load('png/Dead (10).png'))
         self.current_sprite_dead = 0
-
-        # ---------------------------------------------------------------
-        self.jump_animation = False
-        self.spritesJ = []
-        self.spritesJ.append(pygame.image.load('png/Jump (1).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (2).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (3).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (4).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (5).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (6).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (7).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (8).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (9).png'))
-        self.spritesJ.append(pygame.image.load('png/Jump (10).png'))
         self.current_sprite_jump = 0
-
-        # --------------------------------------------------------------
-        self.jump_melee_animation = False
-        self.spritesJM = []
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (1).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (2).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (3).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (4).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (5).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (6).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (7).png'))
-        self.spritesJM.append(pygame.image.load('png/JumpMelee (8).png'))
         self.current_sprite_jumpMelee = 0
-
-        # --------------------------------------------------------------
-        self.slide_animation = False
-        self.spritesS = []
-        self.spritesS.append(pygame.image.load('png/Slide (1).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (2).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (3).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (4).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (5).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (6).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (7).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (8).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (9).png'))
-        self.spritesS.append(pygame.image.load('png/Slide (10).png'))
         self.current_sprite_slide = 0
-
-        # ---------------------------------------------------------------
-        self.shoot_animation = False
-        self.spritesShoot = []
-        self.spritesShoot.append(pygame.image.load('png/Shoot (1).png'))
-        self.spritesShoot.append(pygame.image.load('png/Shoot (2).png'))
-        self.spritesShoot.append(pygame.image.load('png/Shoot (3).png'))
-        self.spritesShoot.append(pygame.image.load('png/Shoot (4).png'))
         self.current_sprite_shoot = 0
-
-        # -------------------------------------------------------------------
-        self.melee_animation = False
-        self.spritesMelee = []
-        self.spritesMelee.append(pygame.image.load('png/Melee (1).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (2).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (3).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (4).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (5).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (6).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (7).png'))
-        self.spritesMelee.append(pygame.image.load('png/Melee (8).png'))
         self.current_sprite_melee = 0
-
         self.image = self.sprites[self.current_sprite]
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.rect = self.image.get_rect()
 
-        self.left_animation = False
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
+    def alternat(self, n=0, r=0, value=0):
+
+        if n:
+            n = self.ninjaList[value]
+            return n
+
+        if r:
+            r = self.robotList[value]
+            return r
 
 
     def melee(self):
@@ -297,7 +286,6 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesJ[int(self.current_sprite_jump)]
             self.image = pygame.transform.flip(self.image, left, False)
 
-
         if self.jumpl_animation:
             self.current_sprite_jump += speed
             if int(self.current_sprite_jump) >= len(self.spritesJ):
@@ -305,7 +293,6 @@ class Player(pygame.sprite.Sprite):
                 self.jump_animation = False
             self.image = self.spritesJ[int(self.current_sprite_jump)]
             self.image = pygame.transform.flip(self.image, left, False)
-
 
         if self.slide_animation:
             self.current_sprite_slide += speed
@@ -333,12 +320,15 @@ class Player(pygame.sprite.Sprite):
 
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
-            if int(self.current_sprite_jumpMelee) >= len(self.current_sprite_jumpMelee):
+            if int(self.current_sprite_jumpMelee) >= len(
+                self.current_sprite_jumpMelee
+            ):
                 self.current_sprite_jumpMelee = 0
                 self.jump_melee_animation = False
             self.image = self.spritesJM[int(self.current_sprite_jumpMelee)]
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
+
 
 pygame.init()
 
@@ -363,20 +353,16 @@ moving_sprites.add(player)
 lifepoint = 450
 
 
-
 while True:
 
     posy = player.rect[1]
     posx = player.rect[0]
-
 
     objects = Objects(posx, posy)
     if not objects.rect.colliderect(player.rect):
         lifepoint -= 1
         if lifepoint == 0:
             player.dead()
-
-
 
     for event in pygame.event.get():
         player.idle()
@@ -387,12 +373,16 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             control = pygame.key.get_pressed()
-            if control[pygame.K_LSHIFT] and control[pygame.K_d] or control[pygame.K_a] and control[pygame.K_LSHIFT]:
+            if (
+                control[pygame.K_LSHIFT]
+                and control[pygame.K_d]
+                or control[pygame.K_a]
+                and control[pygame.K_LSHIFT]
+            ):
                 player.slide()
 
             if control[pygame.K_s]:
                 player.dead()
-
 
             if control[pygame.K_a] and control[pygame.K_SPACE]:
                 player.jumpL()
@@ -400,9 +390,12 @@ while True:
             if control[pygame.K_d] and control[pygame.K_SPACE]:
                 player.jump()
 
+            if control[pygame.K_g]:
+                player.alternat(r=True, value=2)
+                print('Eaeae')
+
             if control[pygame.K_a]:
                 player.runL()
-
 
             if control[pygame.K_d]:
                 player.run()
@@ -423,8 +416,7 @@ while True:
         if player.rect.right <= largura - largura:
             player.rect.right = 90
         if back.get_rect() == 0:
-            print('Ol')
-
+            ...
 
     screen.blit(back, (0, 0))
     moving_sprites.draw(screen)
