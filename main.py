@@ -144,7 +144,7 @@ class Player(pygame.sprite.Sprite):
                 robot_Shoot,#8
                 robot_Slide,#9
             ]
-            playerSelect = type(self.run_animation)
+            playerSelect = False
 
             b += 1
             # Run
@@ -211,6 +211,7 @@ class Player(pygame.sprite.Sprite):
     def jumpL(self):
         self.jump_animation = True
         self.left_animation = True
+        self.rect.bottom -= 5
 
     def jump(self):
         self.jump_animation = True
@@ -354,7 +355,7 @@ lifepoint = 450
 while True:
     print(back_rect.right, player.rect.right)
     if player.rect.right == 1000:
-        back_rect.right = 1000
+        lifepoint -= 1
     posy = player.rect[1]
     posx = player.rect[0]
 
@@ -401,7 +402,7 @@ while True:
                 player.run()
 
             if control[pygame.K_SPACE]:
-                ...
+                player.jump()
 
             if control[pygame.K_h]:
                 player.shoot()
