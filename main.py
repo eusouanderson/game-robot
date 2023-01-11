@@ -65,7 +65,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
-        global pos_player
+        global pos_player, left
 
         self.run_animation = False
         self.runl_animation = False
@@ -144,7 +144,8 @@ class Player(pygame.sprite.Sprite):
                 robot_Shoot,#8
                 robot_Slide,#9
             ]
-            playerSelect = False
+            playerSelect = type(self.run_animation)
+
             b += 1
             # Run
             insert = self.alternat(r=playerSelect, value=0)
@@ -338,6 +339,7 @@ screen = pygame.display.set_mode(tamanho_da_tela)
 back = pygame.image.load('png/back.jpg')
 life = pygame.Rect(0, 0, 10, 10)
 back = pygame.transform.scale(back, (1360, 768))
+back_rect = back.get_rect()
 pygame.display.set_caption('Game Robot')
 
 color = 255, 255, 255
@@ -350,7 +352,9 @@ lifepoint = 450
 
 
 while True:
-
+    print(back_rect.right, player.rect.right)
+    if player.rect.right == 1000:
+        back_rect.right = 1000
     posy = player.rect[1]
     posx = player.rect[0]
 
