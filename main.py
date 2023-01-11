@@ -41,7 +41,6 @@ class Objects(pygame.sprite.Sprite):
 
         self.objectsrect = self.rect.right
 
-
         if pos_player:
             self.rect.right -= 10
 
@@ -91,7 +90,7 @@ class Player(pygame.sprite.Sprite):
         self.spritesMelee = []
         b = 1
 
-        for r in range(0, 1):
+        for r in range(0, 9):
 
             # --------------Ninja-------------------------
 
@@ -108,19 +107,19 @@ class Player(pygame.sprite.Sprite):
             ninja_Throw = f'png/Throw__00{b}.png'
 
             self.ninjaList = [
-                ninja_Attack,
-                ninja_Climb,
-                ninja_Glide,
-                ninja_Idle,
+                ninja_Run,
                 ninja_Dead,
+                ninja_Idle,
                 ninja_Jump,
                 ninja_Jump_Attack,
                 ninja_Jump_Throw,
-                ninja_Run,
-                ninja_Slide,
+                ninja_Attack,
+                ninja_Climb,
+                ninja_Glide,
                 ninja_Throw,
-            ]
+                ninja_Slide,
 
+            ]
 
             robot_Run = f'png/Run ({b}).png'
             robot_Dead = f'png/Dead ({b}).png'
@@ -130,7 +129,7 @@ class Player(pygame.sprite.Sprite):
             robot_Jump_Shoot = f'png/JumpShoot ({b}).png'
             robot_Melee = f'png/Melee ({b}).png'
             robot_Run_Shoot = f'png/RunShoot ({b}).png'
-            robot_Shoot = f'png/Shoot({b}).png'
+            robot_Shoot = f'png/Shoot ({b}).png'
             robot_Slide = f'png/Slide ({b}).png'
 
             self.robotList = [
@@ -145,30 +144,31 @@ class Player(pygame.sprite.Sprite):
                 robot_Shoot,#8
                 robot_Slide,#9
             ]
+            playerSelect = False
             b += 1
             # Run
-            insert = self.alternat(r=True, value=0)
+            insert = self.alternat(r=playerSelect, value=0)
             self.sprites.append(pygame.image.load(insert))
             # Idle
-            insert = self.alternat(r=True, value=2)
+            insert = self.alternat(r=playerSelect, value=2)
             self.spritesL.append(pygame.image.load(insert))
             # Dead
-            insert = self.alternat(r=True, value=1)
+            insert = self.alternat(r=playerSelect, value=1)
             self.spritesD.append(pygame.image.load(insert))
             # Jump
-            insert = self.alternat(r=True, value=3)
+            insert = self.alternat(r=playerSelect, value=3)
             self.spritesJ.append(pygame.image.load(insert))
             #JumpMelee
-            insert = self.alternat(r=True, value=4)
+            insert = self.alternat(r=playerSelect, value=4)
             self.spritesJM.append(pygame.image.load(insert))
             #Slide
-            insert = self.alternat(r=True, value=9)
+            insert = self.alternat(r=playerSelect, value=9)
             self.spritesS.append(pygame.image.load(insert))
             #Shoot
-            insert = self.alternat(r=True, value=4)
+            insert = self.alternat(r=playerSelect, value=7)
             self.spritesShoot.append(pygame.image.load(insert))
             # Melee
-            insert = self.alternat(r=True, value=6)
+            insert = self.alternat(r=playerSelect, value=6)
             self.spritesMelee.append(pygame.image.load(insert))
 
         self.current_sprite = 0
@@ -186,14 +186,13 @@ class Player(pygame.sprite.Sprite):
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
-    def alternat(self, n=0, r=0, value=0):
-
-        if n:
-            n = self.ninjaList[value]
-            return n
+    def alternat(self,r=False, value=0):
 
         if r:
             r = self.robotList[value]
+            return r
+        else:
+            r = self.ninjaList[value]
             return r
 
 
@@ -344,10 +343,7 @@ pygame.display.set_caption('Game Robot')
 color = 255, 255, 255
 colorRed = 255, 0, 0
 moving_sprites = pygame.sprite.Group()
-
-
 player = Player(0, 550)
-
 
 moving_sprites.add(player)
 lifepoint = 450
