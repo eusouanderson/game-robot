@@ -1,10 +1,10 @@
 import sys, pygame
 
-
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
-        global objects_rect
+
+        global bullet_rect
 
         self.bullet_animation = False
         self.spritesBullet = []
@@ -30,16 +30,22 @@ class Objects(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
         self.rect.y = pos_y
+        bullet_rect = self.rect
 
     def bullet(self):
-        self.bullet_animation = True
+
         moving_sprites.add(objects)
+
 
     def update(self, speed):
 
-        global largura
+        global largura, bullet_rect, lifepoint
 
-        self.objectsrect = self.rect.right
+        if player2.rect.colliderect(bullet_rect):
+            lifepoint -= 1
+            Objects.kill(self)
+            if lifepoint == 0:
+                player2.kill()
 
         if pos_player:
             self.rect.right -= 10
@@ -59,10 +65,12 @@ class Objects(pygame.sprite.Sprite):
         self.image = self.spritesBullet[int(self.current_sprite_bullet)]
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
+        bullet_rect = self.rect
+
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x=0, pos_y= 550):
         super().__init__()
 
         global pos_player, left
@@ -118,9 +126,7 @@ class Player(pygame.sprite.Sprite):
                 ninja_Glide,
                 ninja_Throw,
                 ninja_Slide,
-
             ]
-
             robot_Run = f'png/Run ({b}).png'
             robot_Dead = f'png/Dead ({b}).png'
             robot_Idle = f'png/Idle ({b}).png'
@@ -144,7 +150,7 @@ class Player(pygame.sprite.Sprite):
                 robot_Shoot,#8
                 robot_Slide,#9
             ]
-            playerSelect = False
+            playerSelect = True
 
             b += 1
             # Run
@@ -187,7 +193,8 @@ class Player(pygame.sprite.Sprite):
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
-    def alternat(self,r=False, value=0):
+
+    def alternat(self, r=False, value=0):
 
         if r:
             r = self.robotList[value]
@@ -195,7 +202,6 @@ class Player(pygame.sprite.Sprite):
         else:
             r = self.ninjaList[value]
             return r
-
 
     def melee(self):
         self.melee_animation = True
@@ -330,7 +336,6 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
 
-
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -342,32 +347,35 @@ life = pygame.Rect(0, 0, 10, 10)
 back = pygame.transform.scale(back, (1360, 768))
 back_rect = back.get_rect()
 pygame.display.set_caption('Game Robot')
-
 color = 255, 255, 255
 colorRed = 255, 0, 0
+
+txt = 'Life Bar '
+pygame.font.init()
+fonte = pygame.font.get_default_font()
+fontesys = pygame.font.SysFont(fonte, 60)
+txttela = fontesys.render(txt, 1, (255, 255, 255))
+
 moving_sprites = pygame.sprite.Group()
 player = Player(0, 550)
+player2 = Player(500, 550)
 
-moving_sprites.add(player)
+
+moving_sprites.add(player, player2)
+
 lifepoint = 450
+lifepoint1 = 450
 
 
 while True:
-    print(back_rect.right, player.rect.right)
-    if player.rect.right == 1000:
-        lifepoint -= 1
-    posy = player.rect[1]
-    posx = player.rect[0]
+    objects = Objects(player.rect[0], player.rect[1])
 
-    objects = Objects(posx, posy)
-    if not objects.rect.colliderect(player.rect):
-        lifepoint -= 1
-        if lifepoint == 0:
-            player.dead()
+    if lifepoint == 0:
+        player.dead()
 
     for event in pygame.event.get():
         player.idle()
-        player.idle()
+        player2.idle()
 
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -393,7 +401,6 @@ while True:
 
             if control[pygame.K_g]:
                 player.alternat(r=True, value=2)
-                print('Eaeae')
 
             if control[pygame.K_a]:
                 player.runL()
@@ -405,6 +412,7 @@ while True:
                 player.jump()
 
             if control[pygame.K_h]:
+
                 player.shoot()
                 objects.bullet()
 
@@ -421,7 +429,17 @@ while True:
 
     screen.blit(back, (0, 0))
     moving_sprites.draw(screen)
-    pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 50])
+    pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
+    bar = pygame.draw.rect(screen, colorRed, [550, 0, lifepoint1, 40])
+    objects.update(0.50)
+    screen.blit(txttela, (100, 0), bar)
     moving_sprites.update(0.25)
     clock.tick(60)
     pygame.display.update()
+
+
+
+
+
+
+
