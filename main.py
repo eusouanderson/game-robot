@@ -27,28 +27,29 @@ class Objects(pygame.sprite.Sprite):
         self.current_sprite_bullet = 0
         self.left_animation = False
         self.image = self.spritesBullet[self.current_sprite_bullet]
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
-        self.rect.x = pos_x
-        self.rect.y = pos_y
+        self.rect.x = pos_x + 100
+        self.rect.y = pos_y + 50
         bullet_rect = self.rect
 
     def bullet(self):
-
         moving_sprites.add(objects)
 
 
     def update(self, speed):
 
-        global largura, bullet_rect, lifepoint
+        global largura, bullet_rect, lifepoint1
 
         if player2.rect.colliderect(bullet_rect):
-            lifepoint -= 1
-            Objects.kill(self)
-            if lifepoint == 0:
-                player2.kill()
+            lifepoint1 -= 1
+            print('Colidiu')
+            if lifepoint1 == 0:
+                player2.dead()
 
         if pos_player:
             self.rect.right -= 10
+            object.mro()
 
         if pos_player == False:
             self.rect.right += 10
@@ -89,13 +90,17 @@ class Player(pygame.sprite.Sprite):
         self.left_animation = False
 
         self.sprites = []
-        self.spritesL = []
         self.spritesD = []
+        self.spritesL = []
         self.spritesJ = []
         self.spritesJM = []
-        self.spritesS = []
-        self.spritesShoot = []
+        self.spritesJS = []
         self.spritesMelee = []
+        self.spritesRS = []
+        self.spritesShoot = []
+        self.spritesSlide = []
+
+        self.spritesS = []
         b = 1
 
         for r in range(0, 9):
@@ -156,27 +161,33 @@ class Player(pygame.sprite.Sprite):
             # Run
             insert = self.alternat(r=playerSelect, value=0)
             self.sprites.append(pygame.image.load(insert))
+            #Dead
+            insert = self.alternat(r=playerSelect, value=1)
+            self.spritesD.append(pygame.image.load(insert))
             # Idle
             insert = self.alternat(r=playerSelect, value=2)
             self.spritesL.append(pygame.image.load(insert))
-            # Dead
-            insert = self.alternat(r=playerSelect, value=1)
-            self.spritesD.append(pygame.image.load(insert))
             # Jump
             insert = self.alternat(r=playerSelect, value=3)
             self.spritesJ.append(pygame.image.load(insert))
-            #JumpMelee
+            # JumpMelee
             insert = self.alternat(r=playerSelect, value=4)
             self.spritesJM.append(pygame.image.load(insert))
-            #Slide
-            insert = self.alternat(r=playerSelect, value=9)
-            self.spritesS.append(pygame.image.load(insert))
-            #Shoot
-            insert = self.alternat(r=playerSelect, value=7)
-            self.spritesShoot.append(pygame.image.load(insert))
-            # Melee
+            #JumpShoot
+            insert = self.alternat(r=playerSelect, value=5)
+            self.spritesJS.append(pygame.image.load(insert))
+            #Melee
             insert = self.alternat(r=playerSelect, value=6)
             self.spritesMelee.append(pygame.image.load(insert))
+            #Run_Shoot
+            insert = self.alternat(r=playerSelect, value=7)
+            self.spritesRS.append(pygame.image.load(insert))
+            # Shoot
+            insert = self.alternat(r=playerSelect, value=8)
+            self.spritesShoot.append(pygame.image.load(insert))
+            #Slide
+            insert = self.alternat(r=playerSelect, value=9)
+            self.spritesSlide.append(pygame.image.load(insert))
 
         self.current_sprite = 0
         self.current_sprite_idle = 0
@@ -217,7 +228,6 @@ class Player(pygame.sprite.Sprite):
     def jumpL(self):
         self.jump_animation = True
         self.left_animation = True
-        self.rect.bottom -= 5
 
     def jump(self):
         self.jump_animation = True
@@ -232,6 +242,7 @@ class Player(pygame.sprite.Sprite):
         self.left_animation = False
         self.dead_animation = True
 
+
     def runL(self):
         self.run_animation = True
         self.left_animation = True
@@ -243,11 +254,7 @@ class Player(pygame.sprite.Sprite):
     def run(self):
         self.run_animation = True
         self.left_animation = False
-        passos = 0
-        if self.run_animation is True:
-            for p in self.sprites:
-                passos += 5
-            self.rect.right += passos
+        self.rect.right += 50
 
     def idle(self):
         self.idle_animation = True
@@ -303,10 +310,10 @@ class Player(pygame.sprite.Sprite):
 
         if self.slide_animation:
             self.current_sprite_slide += speed
-            if int(self.current_sprite_slide) >= len(self.spritesS):
+            if int(self.current_sprite_slide) >= len(self.spritesSlide):
                 self.current_sprite_slide = 0
                 self.slide_animation = False
-            self.image = self.spritesS[int(self.current_sprite_slide)]
+            self.image = self.spritesSlide[int(self.current_sprite_slide)]
             self.image = pygame.transform.flip(self.image, left, False)
 
         if self.shoot_animation:
@@ -370,6 +377,9 @@ lifepoint1 = 450
 while True:
     objects = Objects(player.rect[0], player.rect[1])
 
+    if lifepoint1 == 0:
+        player2.dead()
+
     if lifepoint == 0:
         player.dead()
 
@@ -412,7 +422,6 @@ while True:
                 player.jump()
 
             if control[pygame.K_h]:
-
                 player.shoot()
                 objects.bullet()
 
