@@ -31,10 +31,16 @@ class Objects(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos_x + 100
         self.rect.y = pos_y + 50
+        if pos_player:
+            self.rect.x = pos_x - 10
+
         bullet_rect = self.rect
+        pos_bullet = True
 
     def bullet(self):
+        global pos_bullet
         moving_sprites.add(objects)
+        pos_bullet = 0
 
 
     def update(self, speed):
@@ -43,16 +49,20 @@ class Objects(pygame.sprite.Sprite):
 
         if player2.rect.colliderect(bullet_rect):
             lifepoint1 -= 1
-            print('Colidiu')
+
             if lifepoint1 == 0:
                 player2.dead()
 
         if pos_player:
             self.rect.right -= 10
-            object.mro()
+
+
 
         if pos_player == False:
             self.rect.right += 10
+
+        print(pos_player)
+
 
         if self.rect.x <= 0:
             Objects.kill(self)
@@ -85,6 +95,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_animation = False
         self.jump_melee_animation = False
         self.slide_animation = False
+        self.runshoot_animation = False
         self.shoot_animation = False
         self.melee_animation = False
         self.left_animation = False
@@ -198,9 +209,9 @@ class Player(pygame.sprite.Sprite):
         self.current_sprite_shoot = 0
         self.current_sprite_melee = 0
         self.image = self.sprites[self.current_sprite]
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
-
+        self.rect = self.rect.inflate(10, 10)
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
@@ -216,6 +227,11 @@ class Player(pygame.sprite.Sprite):
 
     def melee(self):
         self.melee_animation = True
+
+    def runshoot(self):
+        self.left_animation = False
+        self.runshoot_animation = True
+        self.rect.right += 50
 
     def shoot(self):
         self.shoot_animation = True
@@ -277,11 +293,22 @@ class Player(pygame.sprite.Sprite):
 
         if self.run_animation:
             self.current_sprite += speed
+            pos_player = left
             if int(self.current_sprite) >= len(self.sprites):
                 self.current_sprite = 0
                 self.run_animation = False
-                pos_player = left
+
             self.image = self.sprites[int(self.current_sprite)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.runshoot_animation:
+            self.current_sprite += speed
+            pos_player = left
+            if int(self.current_sprite) >= len(self.sprites):
+                self.current_sprite = 0
+                self.runshoot_animation = False
+
+            self.image = self.spritesRS[int(self.current_sprite)]
             self.image = pygame.transform.flip(self.image, left, False)
 
         if self.dead_animation:
@@ -360,8 +387,8 @@ colorRed = 255, 0, 0
 txt = 'Life Bar '
 pygame.font.init()
 fonte = pygame.font.get_default_font()
-fontesys = pygame.font.SysFont(fonte, 60)
-txttela = fontesys.render(txt, 1, (255, 255, 255))
+fontesys = pygame.font.SysFont(fonte, 600)
+txttela = fontesys.render(txt, 10, (255, 255, 255))
 
 moving_sprites = pygame.sprite.Group()
 player = Player(0, 550)
@@ -390,6 +417,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        # ------------------------ CONTROL -------------------
         if event.type == pygame.KEYDOWN:
             control = pygame.key.get_pressed()
             if (
@@ -424,6 +452,9 @@ while True:
             if control[pygame.K_h]:
                 player.shoot()
                 objects.bullet()
+
+            if control[pygame.K_q]:
+                player.runshoot()
 
             if control[pygame.K_f]:
                 player.melee()
