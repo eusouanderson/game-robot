@@ -209,9 +209,6 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.rect = self.image.get_rect()
 
-
-
-
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
@@ -252,7 +249,6 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         self.jump_animation = True
-        self.left_animation = False
 
     def jumpMelee(self):
         self.current_sprite_jumpMelee = True
@@ -278,6 +274,24 @@ class Player(pygame.sprite.Sprite):
 
     def idle(self):
         self.idle_animation = True
+    # Robot Functions ---------------------------------
+
+    def rundead(self):
+
+        global lifepoint
+        print(player.rect.right)
+        if player.rect.right <= player2.rect.right:
+            player2.runL()
+
+        if player.rect.right >= player2.rect.right:
+            player2.run()
+        '''
+        else:
+            self.rect.right = 550'''
+
+        if self.rect.colliderect(player.rect):
+                player2.melee()
+                lifepoint -= 1
 
     def update(self, speed):
 
@@ -303,8 +317,17 @@ class Player(pygame.sprite.Sprite):
             if int(self.current_sprite) >= len(self.sprites):
                 self.current_sprite = 0
                 self.run_animation = False
-
             self.image = self.sprites[int(self.current_sprite)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.jump_animation:
+            self.current_sprite_jump += speed
+            pos_player = left
+
+            if int(self.current_sprite_jump) >= len(self.spritesJ):
+                self.current_sprite_jump = 0
+                self.jump_animation = False
+            self.image = self.spritesJ[int(self.current_sprite_jump)]
             self.image = pygame.transform.flip(self.image, left, False)
 
         if self.runshoot_animation:
@@ -313,7 +336,6 @@ class Player(pygame.sprite.Sprite):
             if int(self.current_sprite) >= len(self.sprites):
                 self.current_sprite = 0
                 self.runshoot_animation = False
-
             self.image = self.spritesRS[int(self.current_sprite)]
             self.image = pygame.transform.flip(self.image, left, False)
 
@@ -325,13 +347,7 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesD[int(self.current_sprite_dead)]
             self.image = pygame.transform.flip(self.image, left, False)
 
-        if self.jump_animation:
-            self.current_sprite_jump += speed
-            if int(self.current_sprite_jump) >= len(self.spritesJ):
-                self.current_sprite_jump = 0
-                self.jump_animation = False
-            self.image = self.spritesJ[int(self.current_sprite_jump)]
-            self.image = pygame.transform.flip(self.image, left, False)
+
 
         if self.jumpl_animation:
             self.current_sprite_jump += speed
@@ -367,10 +383,10 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, left, False)
             self.meleeRect= player.rect
 
-
+# Se colidir melee com player2
             if self.meleeRect.colliderect(player2.rect):
-                lifepoint1 -= 1
-                player2.dead()
+                '''lifepoint1 -= 0.30'''
+
 
 
         if self.jump_melee_animation:
@@ -429,6 +445,7 @@ while True:
     for event in pygame.event.get():
         player.idle()
         player2.idle()
+        player2.rundead()
 
         if event.type == pygame.QUIT:
             pygame.quit()
