@@ -36,24 +36,21 @@ class Objects(pygame.sprite.Sprite):
         if pos_player:
             self.rect.x = pos_x - 10
 
-        bullet_rect = self.rect
-        pos_bullet = True
-
     def bullet(self):
-        global pos_bullet
         moving_sprites.add(objects)
-        pos_bullet = 0
+
 
 
     def update(self, speed):
 
         global largura, bullet_rect, lifepoint1
 
-        pygame.draw.rect(screen, color, pygame.Rect(self.rect), 2, 3)
+        bullet_rect = self.rect
+        pygame.draw.rect(screen, color, pygame.Rect(bullet_rect), 2, 3)
 
-        if self.rect.colliderect(player2.rect):
+        if bullet_rect.colliderect(player2.rect):
             lifepoint1 -= 1
-            print('Colidindo...')
+
 
             if lifepoint1 == 0:
                 player2.dead()
@@ -73,12 +70,10 @@ class Objects(pygame.sprite.Sprite):
         self.current_sprite_bullet += speed
         if int(self.current_sprite_bullet) >= len(self.spritesBullet):
             self.current_sprite_bullet = 1
-
-
         self.image = self.spritesBullet[int(self.current_sprite_bullet)]
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
-        bullet_rect = self.rect
+
 
 
 
@@ -215,6 +210,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
+
+
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
@@ -242,6 +239,7 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self):
         self.shoot_animation = True
+
 
     def slide(self):
         self.left_animation = False
@@ -283,7 +281,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, speed):
 
-        global pos_player
+        global pos_player, lifepoint1
         pygame.draw.rect(screen, color, pygame.Rect(player2.rect), 2, 3)
         pygame.draw.rect(screen, color, pygame.Rect(player.rect), 2, 3)
 
@@ -367,6 +365,13 @@ class Player(pygame.sprite.Sprite):
                 self.melee_animation = False
             self.image = self.spritesMelee[int(self.current_sprite_melee)]
             self.image = pygame.transform.flip(self.image, left, False)
+            self.meleeRect= player.rect
+
+
+            if self.meleeRect.colliderect(player2.rect):
+                lifepoint1 -= 1
+                player2.dead()
+
 
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
@@ -413,8 +418,8 @@ lifepoint1 = 450
 
 
 while True:
+
     objects = Objects(player.rect[0], player.rect[1])
-    print(back_rect)
     if lifepoint1 == 0:
         player2.dead()
 
@@ -489,8 +494,6 @@ while True:
     moving_sprites.draw(screen)
     pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
     bar = pygame.draw.rect(screen, colorRed, [550, 0, lifepoint1, 40])
-
-    objects.update(0.50)
     screen.blit(txttela, (100, 0), bar)
     moving_sprites.update(0.25)
     clock.tick(60)
