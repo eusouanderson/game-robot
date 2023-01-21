@@ -30,7 +30,6 @@ class Objects(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
-
         self.rect.x = pos_x + 100
         self.rect.y = pos_y + 50
         if pos_player:
@@ -38,8 +37,6 @@ class Objects(pygame.sprite.Sprite):
 
     def bullet(self):
         moving_sprites.add(objects)
-
-
 
     def update(self, speed):
 
@@ -51,13 +48,11 @@ class Objects(pygame.sprite.Sprite):
         if bullet_rect.colliderect(player2.rect):
             lifepoint1 -= 1
 
-
             if lifepoint1 == 0:
                 player2.dead()
 
         if pos_player:
             self.rect.right -= 10
-
 
         if pos_player == False:
             self.rect.right += 10
@@ -75,10 +70,8 @@ class Objects(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
 
-
-
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x=0, pos_y=550):
+    def __init__(self, pos_x=0, pos_y=550, alt=1):
         super().__init__()
 
         global pos_player, left
@@ -112,7 +105,6 @@ class Player(pygame.sprite.Sprite):
         b = 1
 
         for r in range(0, 9):
-
             # --------------Ninja-------------------------
 
             ninja_Attack = f'png/Attack__00{b}.png'
@@ -152,24 +144,47 @@ class Player(pygame.sprite.Sprite):
             robot_Slide = f'png/Slide ({b}).png'
 
             self.robotList = [
-                robot_Run,#0
-                robot_Dead,#1
-                robot_Idle,#2
-                robot_Jump,#3
-                robot_Jump_Melee,#4
-                robot_Jump_Shoot,#5
-                robot_Melee,#6
-                robot_Run_Shoot,#7
-                robot_Shoot,#8
-                robot_Slide,#9
+                robot_Run,  # 0
+                robot_Dead,  # 1
+                robot_Idle,  # 2
+                robot_Jump,  # 3
+                robot_Jump_Melee,  # 4
+                robot_Jump_Shoot,  # 5
+                robot_Melee,  # 6
+                robot_Run_Shoot,  # 7
+                robot_Shoot,  # 8
+                robot_Slide,  # 9
             ]
-            playerSelect = True
+            robotI_Run = f'png/Inimig/Run ({b}).png'
+            robotI_Dead = f'png/Inimig/Dead (1).png'
+            robotI_Idle = f'png/Inimig/Idle ({b}).png'
+            robotI_Jump = f'png/Inimig/Jump ({b}).png'
+            robotI_Jump_Melee = f'png/Inimig/JumpMelee ({b}).png'
+            robotI_Jump_Shoot = f'png/Inimig/JumpShoot ({b}).png'
+            robotI_Melee = f'png/Inimig/Melee ({b}).png'
+            robotI_Run_Shoot = f'png/Inimig/RunShoot ({b}).png'
+            robotI_Shoot = f'png/Inimig/Shoot ({b}).png'
+            robotI_Slide = f'png/Inimig/Slide ({b}).png'
+
+            self.robotInimiList= [
+                robotI_Run,  # 0
+                robotI_Dead,  # 1
+                robotI_Idle,  # 2
+                robotI_Jump,  # 3
+                robotI_Jump_Melee,  # 4
+                robotI_Jump_Shoot,  # 5
+                robotI_Melee,  # 6
+                robotI_Run_Shoot,  # 7
+                robotI_Shoot,  # 8
+                robotI_Slide,  # 9
+            ]
+            playerSelect = alt
 
             b += 1
             # Run
             insert = self.alternat(r=playerSelect, value=0)
             self.sprites.append(pygame.image.load(insert))
-            #Dead
+            # Dead
             insert = self.alternat(r=playerSelect, value=1)
             self.spritesD.append(pygame.image.load(insert))
             # Idle
@@ -181,19 +196,19 @@ class Player(pygame.sprite.Sprite):
             # JumpMelee
             insert = self.alternat(r=playerSelect, value=4)
             self.spritesJM.append(pygame.image.load(insert))
-            #JumpShoot
+            # JumpShoot
             insert = self.alternat(r=playerSelect, value=5)
             self.spritesJS.append(pygame.image.load(insert))
-            #Melee
+            # Melee
             insert = self.alternat(r=playerSelect, value=6)
             self.spritesMelee.append(pygame.image.load(insert))
-            #Run_Shoot
+            # Run_Shoot
             insert = self.alternat(r=playerSelect, value=7)
             self.spritesRS.append(pygame.image.load(insert))
             # Shoot
             insert = self.alternat(r=playerSelect, value=8)
             self.spritesShoot.append(pygame.image.load(insert))
-            #Slide
+            # Slide
             insert = self.alternat(r=playerSelect, value=9)
             self.spritesSlide.append(pygame.image.load(insert))
 
@@ -213,13 +228,16 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
 
-    def alternat(self, r=False, value=0):
+    def alternat(self, r=0, value=0):
 
-        if r:
+        if r == 1:
             r = self.robotList[value]
             return r
-        else:
+        if r == 2:
             r = self.ninjaList[value]
+            return r
+        if r == 3:
+            r = self.robotInimiList[value]
             return r
 
     def melee(self):
@@ -229,6 +247,7 @@ class Player(pygame.sprite.Sprite):
         self.left_animation = False
         self.runshoot_animation = True
         self.rect.right += 10
+
     def runshootL(self):
         self.left_animation = False
         self.runshoot_animation = True
@@ -236,7 +255,6 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self):
         self.shoot_animation = True
-
 
     def slide(self):
         self.left_animation = False
@@ -274,24 +292,23 @@ class Player(pygame.sprite.Sprite):
 
     def idle(self):
         self.idle_animation = True
+
     # Robot Functions ---------------------------------
 
     def rundead(self):
 
         global lifepoint
-        print(player.rect.right)
+
+        player2.update(0.25)
         if player.rect.right <= player2.rect.right:
             player2.runL()
 
         if player.rect.right >= player2.rect.right:
             player2.run()
-        '''
-        else:
-            self.rect.right = 550'''
 
         if self.rect.colliderect(player.rect):
-                player2.melee()
-                lifepoint -= 1
+            player2.melee()
+            lifepoint -= 1
 
     def update(self, speed):
 
@@ -347,8 +364,6 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesD[int(self.current_sprite_dead)]
             self.image = pygame.transform.flip(self.image, left, False)
 
-
-
         if self.jumpl_animation:
             self.current_sprite_jump += speed
             if int(self.current_sprite_jump) >= len(self.spritesJ):
@@ -356,7 +371,6 @@ class Player(pygame.sprite.Sprite):
                 self.jump_animation = False
             self.image = self.spritesJ[int(self.current_sprite_jump)]
             self.image = pygame.transform.flip(self.image, left, False)
-
 
         if self.slide_animation:
             self.current_sprite_slide += speed
@@ -381,24 +395,24 @@ class Player(pygame.sprite.Sprite):
                 self.melee_animation = False
             self.image = self.spritesMelee[int(self.current_sprite_melee)]
             self.image = pygame.transform.flip(self.image, left, False)
-            self.meleeRect= player.rect
+            self.meleeRect = player.rect
 
-# Se colidir melee com player2
+            # Se colidir melee com player2
             if self.meleeRect.colliderect(player2.rect):
-                '''lifepoint1 -= 0.30'''
-
-
+                lifepoint1 -= 0.30
 
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
             if int(self.current_sprite_jumpMelee) >= len(
-                self.current_sprite_jumpMelee
+                    self.current_sprite_jumpMelee
             ):
                 self.current_sprite_jumpMelee = 0
                 self.jump_melee_animation = False
             self.image = self.spritesJM[int(self.current_sprite_jumpMelee)]
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
+
+
 
 pygame.init()
 
@@ -423,9 +437,9 @@ fontesys = pygame.font.SysFont(fonte, 600)
 txttela = fontesys.render(txt, 10, (255, 255, 255))
 
 moving_sprites = pygame.sprite.Group()
-player = Player(0, 550)
-player2 = Player(500, 550)
 
+player = Player(0, 550, alt=1)
+player2 = Player(500, 550, alt=2)
 
 moving_sprites.add(player, player2)
 
@@ -439,6 +453,7 @@ while True:
     if lifepoint1 == 0:
         player2.dead()
 
+
     if lifepoint == 0:
         player.dead()
 
@@ -446,6 +461,7 @@ while True:
         player.idle()
         player2.idle()
         player2.rundead()
+
 
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -489,10 +505,8 @@ while True:
                     player.runshoot()
                     objects.bullet()
 
-
             if control[pygame.K_SPACE]:
                 player.jump()
-
 
             if control[pygame.K_f]:
                 player.melee()
@@ -505,8 +519,6 @@ while True:
             player.rect.right = 90
             back_pos = -1, 0
 
-
-
     screen.blit(back, (back_pos))
     moving_sprites.draw(screen)
     pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
@@ -515,10 +527,3 @@ while True:
     moving_sprites.update(0.25)
     clock.tick(60)
     pygame.display.update()
-
-
-
-
-
-
-
