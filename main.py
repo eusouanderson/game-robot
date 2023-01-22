@@ -1,4 +1,282 @@
 import sys, pygame
+from time import sleep
+
+class Inimig(pygame.sprite.Sprite):
+    def __init__(self, pos_x=1500, pos_y=550):
+        super().__init__()
+
+        self.run_animation = False
+        self.runl_animation = False
+        self.left_animation = False
+        self.jumpl_animation = False
+        self.idle_animation = False
+        self.dead_animation = False
+        self.jump_animation = False
+        self.jump_melee_animation = False
+        self.slide_animation = False
+        self.NinjaThrow_animation = False
+        self.shoot_animation = False
+        self.melee_animation = False
+        self.left_animation = False
+
+        self.NinjaAttack = []
+        self.NinjaClimb = []
+        self.NinjaDead = []
+        self.NinjaGlide = []
+        self.NinjaIdle = []
+        self.NinjaJump = []
+        self.NinjaJumpAttack = []
+        self.NinjaJumpThrow = []
+        self.NinjaRun = []
+        self.NinjaSlide = []
+        self.NinjaThrow = []
+        b = -1
+
+        for r in range(0, 10):
+            b += 1
+
+            NinjaAttack = f'png/Inimig/Attack__00{b}.png'
+            NinjaClimb = f'png/Inimig/Climb_00{b}.png'
+            NinjaDead = f'png/Inimig/Dead__00{b}.png'
+            NinjaGlide = f'png/Inimig/Glide_00{b}.png'
+            NinjaIdle = f'png/Inimig/Idle__00{b}.png'
+            NinjaJump = f'png/Inimig/Jump__00{b}.png'
+            NinjaJumpAttack = f'png/Inimig/Jump_Attack__00{b}.png'
+            NinjaJumpThrow = f'png/Inimig/Jump_Throw__00{b}.png'
+            NinjaRun = f'png/Inimig/Run__00{b}.png'
+            NinjaSlide = f'png/Inimig/Slide__00{b}.png'
+            NinjaThrow = f'png/Inimig/Throw__00{b}.png'
+
+            self.ninjaList = [
+                NinjaAttack,
+                NinjaClimb,
+                NinjaDead,
+                NinjaGlide,
+                NinjaIdle,
+                NinjaJump,
+                NinjaJumpAttack,
+                NinjaJumpThrow,
+                NinjaRun,
+                NinjaSlide,
+                NinjaThrow
+            ]
+
+            insert = self.ninjaList[0]
+            self.NinjaAttack.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[1]
+            self.NinjaClimb.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[2]
+            self.NinjaDead.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[3]
+            self.NinjaGlide.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[4]
+            self.NinjaIdle.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[5]
+            self.NinjaJump.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[6]
+            self.NinjaJumpAttack.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[7]
+            self.NinjaJumpThrow.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[8]
+            self.NinjaRun.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[9]
+            self.NinjaSlide.append(pygame.image.load(insert))
+
+            insert = self.ninjaList[10]
+            self.NinjaThrow.append(pygame.image.load(insert))
+
+        self.current_sprite = 0
+        self.current_sprite_idle = 0
+        self.current_sprite_dead = 0
+        self.current_sprite_jump = 0
+        self.current_sprite_jumpMelee = 0
+        self.current_sprite_slide = 0
+        self.current_sprite_shoot = 0
+        self.current_sprite_melee = 0
+        self.image = self.NinjaAttack[self.current_sprite]
+        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.rect = self.image.get_rect()
+
+
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
+    def melee(self):
+        self.melee_animation = True
+
+    def runshoot(self):
+        self.left_animation = False
+        self.runshoot_animation = True
+        self.rect.right += 10
+
+    def runshootL(self):
+        self.left_animation = False
+        self.runshoot_animation = True
+        self.rect.right -= 10
+
+    def shoot(self):
+        self.shoot_animation = True
+
+    def slide(self):
+        self.left_animation = False
+        self.slide_animation = True
+        self.rect.right += 9
+
+    def jumpL(self):
+        self.jump_animation = True
+        self.left_animation = True
+
+    def jump(self):
+        self.jump_animation = True
+
+    def jumpMelee(self):
+        self.current_sprite_jumpMelee = True
+        self.rect.right += 50
+        self.left_animation = False
+
+    def dead(self):
+        self.left_animation = False
+        self.dead_animation = True
+        rival.kill()
+
+    def runL(self):
+        self.run_animation = True
+        self.left_animation = True
+        self.rect.right -= 5
+
+    def run(self):
+        self.run_animation = True
+        self.left_animation = False
+        self.rect.right += 5
+
+    def idle(self):
+        self.idle_animation = True
+
+    # Robot Functions ---------------------------------
+
+    def rundead(self):
+
+        global lifepoint
+
+
+        if player.rect.right <= rival.rect.right:
+
+            rival.runL()
+
+        if player.rect.right >= rival.rect.right:
+            rival.run()
+
+        if self.rect.colliderect(player.rect):
+            rival.melee()
+            lifepoint -= 1
+    def update(self, speed):
+
+        global lifepoint1
+        pygame.draw.rect(screen, color, pygame.Rect(player.rect), 2, 3)
+
+
+        left = False
+
+        if self.left_animation:
+            left = True
+
+        if self.idle_animation:
+            self.current_sprite_idle += speed
+            if int(self.current_sprite_idle) >= len(self.NinjaIdle):
+                self.current_sprite_idle = 0
+            self.image = self.NinjaIdle[int(self.current_sprite_idle)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.run_animation:
+            self.current_sprite += speed
+
+            if int(self.current_sprite) >= len(self.NinjaRun):
+                self.current_sprite = 0
+                self.run_animation = False
+            self.image = self.NinjaRun[int(self.current_sprite)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.jump_animation:
+            self.current_sprite_jump += speed
+
+            if int(self.current_sprite_jump) >= len(self.NinjaJump):
+                self.current_sprite_jump = 0
+                self.jump_animation = False
+            self.image = self.NinjaJump[int(self.current_sprite_jump)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.NinjaThrow_animation:
+            self.current_sprite += speed
+
+            if int(self.current_sprite) >= len(self.NinjaThrow):
+                self.current_sprite = 0
+                self.runshoot_animation = False
+            self.image = self.NinjaThrow[int(self.current_sprite)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.dead_animation:
+            self.current_sprite_dead += speed
+            if int(self.current_sprite_dead) >= len(self.NinjaDead):
+                self.current_sprite_dead = 0
+                self.dead_animation = False
+            self.image = self.NinjaDead[int(self.current_sprite_dead)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.jumpl_animation:
+            self.current_sprite_jump += speed
+            if int(self.current_sprite_jump) >= len(self.NinjaJump):
+                self.current_sprite_jump = 0
+                self.jump_animation = False
+            self.image = self.NinjaJump[int(self.current_sprite_jump)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.slide_animation:
+            self.current_sprite_slide += speed
+            if int(self.current_sprite_slide) >= len(self.NinjaSlide):
+                self.current_sprite_slide = 0
+                self.slide_animation = False
+            self.image = self.NinjaSlide[int(self.current_sprite_slide)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.shoot_animation:
+            self.current_sprite_shoot += speed
+            if int(self.current_sprite_shoot) >= len(self.NinjaAttack):
+                self.current_sprite_shoot = 0
+                self.shoot_animation = False
+            self.image = self.NinjaAttack[int(self.current_sprite_shoot)]
+            self.image = pygame.transform.flip(self.image, left, False)
+
+        if self.melee_animation:
+            self.current_sprite_melee += speed
+            if int(self.current_sprite_melee) >= len(self.NinjaJumpAttack):
+                self.current_sprite_melee = 0
+                self.melee_animation = False
+            self.image = self.NinjaJumpAttack[int(self.current_sprite_melee)]
+            self.image = pygame.transform.flip(self.image, left, False)
+            self.meleeRect = player.rect
+
+
+
+        if self.jump_melee_animation:
+            self.current_sprite_jumpMelee += speed
+            if int(self.current_sprite_jumpMelee) >= len(
+                    self.NinjaJumpThrow
+            ):
+                self.current_sprite_jumpMelee = 0
+                self.jump_melee_animation = False
+            self.image = self.NinjaJumpThrow[int(self.current_sprite_jumpMelee)]
+            self.image = pygame.transform.flip(self.image, left, False)
+        self.image = pygame.transform.scale(self.image, (150, 150))
+
 
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -45,11 +323,13 @@ class Objects(pygame.sprite.Sprite):
         bullet_rect = self.rect
         pygame.draw.rect(screen, color, pygame.Rect(bullet_rect), 2, 3)
 
-        if bullet_rect.colliderect(player2.rect):
+        if bullet_rect.colliderect(rival.rect):
             lifepoint1 -= 1
+            objects.kill()
+            rival.rect.right += 5
 
             if lifepoint1 == 0:
-                player2.dead()
+                rival.dead()
 
         if pos_player:
             self.rect.right -= 10
@@ -71,7 +351,7 @@ class Objects(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x=0, pos_y=550, alt=1):
+    def __init__(self, pos_x=0, pos_y=550):
         super().__init__()
 
         global pos_player, left
@@ -100,48 +380,25 @@ class Player(pygame.sprite.Sprite):
         self.spritesRS = []
         self.spritesShoot = []
         self.spritesSlide = []
-
         self.spritesS = []
         b = 1
 
-        for r in range(0, 9):
-            # --------------Ninja-------------------------
+        for r in range(0, 10):
 
-            ninja_Attack = f'png/Attack__00{b}.png'
-            ninja_Climb = f'png/Climb_00{b}.png'
-            ninja_Glide = f'png/Glide_00{b}.png'
-            ninja_Idle = f'png/Idle__00{b}.png'
-            ninja_Dead = f'png/Dead__00{b}.png'
-            ninja_Jump = f'png/Jump__00{b}.png'
-            ninja_Jump_Attack = f'png/Jump_Attack__00{b}.png'
-            ninja_Jump_Throw = f'png/Jump_Throw__00{b}.png'
-            ninja_Run = f'png/Run__00{b}.png'
-            ninja_Slide = f'png/Slide__00{b}.png'
-            ninja_Throw = f'png/Throw__00{b}.png'
 
-            self.ninjaList = [
-                ninja_Run,
-                ninja_Dead,
-                ninja_Idle,
-                ninja_Jump,
-                ninja_Jump_Attack,
-                ninja_Jump_Throw,
-                ninja_Attack,
-                ninja_Climb,
-                ninja_Glide,
-                ninja_Throw,
-                ninja_Slide,
-            ]
-            robot_Run = f'png/Run ({b}).png'
-            robot_Dead = f'png/Dead ({b}).png'
-            robot_Idle = f'png/Idle ({b}).png'
-            robot_Jump = f'png/Jump ({b}).png'
-            robot_Jump_Melee = f'png/JumpMelee ({b}).png'
-            robot_Jump_Shoot = f'png/JumpShoot ({b}).png'
-            robot_Melee = f'png/Melee ({b}).png'
-            robot_Run_Shoot = f'png/RunShoot ({b}).png'
-            robot_Shoot = f'png/Shoot ({b}).png'
-            robot_Slide = f'png/Slide ({b}).png'
+            self.white = 'WhiteRobot'
+            self.black = 'BlackRobot'
+            self.robot_select = self.white
+            robot_Run = f'png/Players/{self.robot_select}/Run ({b}).png'
+            robot_Dead = f'png/Players/{self.robot_select}/Dead ({b}).png'
+            robot_Idle = f'png/Players/{self.robot_select}/Idle ({b}).png'
+            robot_Jump = f'png/Players/{self.robot_select}/Jump ({b}).png'
+            robot_Jump_Melee = f'png/Players/{self.robot_select}/JumpMelee ({b}).png'
+            robot_Jump_Shoot = f'png/Players/{self.robot_select}/JumpShoot ({b}).png'
+            robot_Melee = f'png/Players/{self.robot_select}/Melee ({b}).png'
+            robot_Run_Shoot = f'png/Players/{self.robot_select}/RunShoot ({b}).png'
+            robot_Shoot = f'png/Players/{self.robot_select}/Shoot ({b}).png'
+            robot_Slide = f'png/Players/{self.robot_select}/Slide ({b}).png'
 
             self.robotList = [
                 robot_Run,  # 0
@@ -155,61 +412,38 @@ class Player(pygame.sprite.Sprite):
                 robot_Shoot,  # 8
                 robot_Slide,  # 9
             ]
-            robotI_Run = f'png/Inimig/Run ({b}).png'
-            robotI_Dead = f'png/Inimig/Dead (1).png'
-            robotI_Idle = f'png/Inimig/Idle ({b}).png'
-            robotI_Jump = f'png/Inimig/Jump ({b}).png'
-            robotI_Jump_Melee = f'png/Inimig/JumpMelee ({b}).png'
-            robotI_Jump_Shoot = f'png/Inimig/JumpShoot ({b}).png'
-            robotI_Melee = f'png/Inimig/Melee ({b}).png'
-            robotI_Run_Shoot = f'png/Inimig/RunShoot ({b}).png'
-            robotI_Shoot = f'png/Inimig/Shoot ({b}).png'
-            robotI_Slide = f'png/Inimig/Slide ({b}).png'
-
-            self.robotInimiList= [
-                robotI_Run,  # 0
-                robotI_Dead,  # 1
-                robotI_Idle,  # 2
-                robotI_Jump,  # 3
-                robotI_Jump_Melee,  # 4
-                robotI_Jump_Shoot,  # 5
-                robotI_Melee,  # 6
-                robotI_Run_Shoot,  # 7
-                robotI_Shoot,  # 8
-                robotI_Slide,  # 9
-            ]
-            playerSelect = alt
 
             b += 1
+
             # Run
-            insert = self.alternat(r=playerSelect, value=0)
+            insert = self.robotList[0]
             self.sprites.append(pygame.image.load(insert))
             # Dead
-            insert = self.alternat(r=playerSelect, value=1)
+            insert = self.robotList[1]
             self.spritesD.append(pygame.image.load(insert))
             # Idle
-            insert = self.alternat(r=playerSelect, value=2)
+            insert = self.robotList[2]
             self.spritesL.append(pygame.image.load(insert))
             # Jump
-            insert = self.alternat(r=playerSelect, value=3)
+            insert = self.robotList[3]
             self.spritesJ.append(pygame.image.load(insert))
             # JumpMelee
-            insert = self.alternat(r=playerSelect, value=4)
+            insert = self.robotList[4]
             self.spritesJM.append(pygame.image.load(insert))
             # JumpShoot
-            insert = self.alternat(r=playerSelect, value=5)
+            insert = self.robotList[5]
             self.spritesJS.append(pygame.image.load(insert))
             # Melee
-            insert = self.alternat(r=playerSelect, value=6)
+            insert = self.robotList[6]
             self.spritesMelee.append(pygame.image.load(insert))
             # Run_Shoot
-            insert = self.alternat(r=playerSelect, value=7)
+            insert = self.robotList[7]
             self.spritesRS.append(pygame.image.load(insert))
             # Shoot
-            insert = self.alternat(r=playerSelect, value=8)
+            insert = self.robotList[8]
             self.spritesShoot.append(pygame.image.load(insert))
             # Slide
-            insert = self.alternat(r=playerSelect, value=9)
+            insert = self.robotList[9]
             self.spritesSlide.append(pygame.image.load(insert))
 
         self.current_sprite = 0
@@ -227,18 +461,6 @@ class Player(pygame.sprite.Sprite):
         pos_player = False
         self.rect.x = pos_x
         self.rect.y = pos_y
-
-    def alternat(self, r=0, value=0):
-
-        if r == 1:
-            r = self.robotList[value]
-            return r
-        if r == 2:
-            r = self.ninjaList[value]
-            return r
-        if r == 3:
-            r = self.robotInimiList[value]
-            return r
 
     def melee(self):
         self.melee_animation = True
@@ -293,27 +515,9 @@ class Player(pygame.sprite.Sprite):
     def idle(self):
         self.idle_animation = True
 
-    # Robot Functions ---------------------------------
-
-    def rundead(self):
-
-        global lifepoint
-
-        player2.update(0.25)
-        if player.rect.right <= player2.rect.right:
-            player2.runL()
-
-        if player.rect.right >= player2.rect.right:
-            player2.run()
-
-        if self.rect.colliderect(player.rect):
-            player2.melee()
-            lifepoint -= 1
-
     def update(self, speed):
 
         global pos_player, lifepoint1
-        pygame.draw.rect(screen, color, pygame.Rect(player2.rect), 2, 3)
         pygame.draw.rect(screen, color, pygame.Rect(player.rect), 2, 3)
 
         left = False
@@ -397,10 +601,6 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, left, False)
             self.meleeRect = player.rect
 
-            # Se colidir melee com player2
-            if self.meleeRect.colliderect(player2.rect):
-                lifepoint1 -= 0.30
-
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
             if int(self.current_sprite_jumpMelee) >= len(
@@ -411,7 +611,6 @@ class Player(pygame.sprite.Sprite):
             self.image = self.spritesJM[int(self.current_sprite_jumpMelee)]
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
-
 
 
 pygame.init()
@@ -431,27 +630,35 @@ color = 255, 255, 255
 colorRed = 255, 0, 0
 
 txt = 'Life Bar '
+
+
+
 pygame.font.init()
+
+lifepoint = 500
+lifepoint1 = 500
+
 fonte = pygame.font.get_default_font()
-fontesys = pygame.font.SysFont(fonte, 600)
-txttela = fontesys.render(txt, 10, (255, 255, 255))
+fontesys = pygame.font.SysFont(fonte, 35)
+
 
 moving_sprites = pygame.sprite.Group()
 
-player = Player(0, 550, alt=1)
-player2 = Player(500, 550, alt=2)
+player = Player(0, 550)
 
-moving_sprites.add(player, player2)
+rival = Inimig(500, 550)
 
-lifepoint = 450
-lifepoint1 = 450
+moving_sprites.add(player, rival)
+
+
 
 
 while True:
-
+    txttela = fontesys.render(f'{lifepoint}', 100, (color))
+    txttela1 = fontesys.render(f'{lifepoint1}', 100, (color))
     objects = Objects(player.rect[0], player.rect[1])
     if lifepoint1 == 0:
-        player2.dead()
+        rival.dead()
 
 
     if lifepoint == 0:
@@ -459,9 +666,8 @@ while True:
 
     for event in pygame.event.get():
         player.idle()
-        player2.idle()
-        player2.rundead()
-
+        rival.idle()
+        rival.rundead()
 
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -523,7 +729,9 @@ while True:
     moving_sprites.draw(screen)
     pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
     bar = pygame.draw.rect(screen, colorRed, [550, 0, lifepoint1, 40])
-    screen.blit(txttela, (100, 0), bar)
+    screen.blit(txttela, [0, 0])
+    screen.blit(txttela1, [largura-40, 0])
+
     moving_sprites.update(0.25)
     clock.tick(60)
     pygame.display.update()
