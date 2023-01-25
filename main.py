@@ -1,5 +1,5 @@
 import sys, pygame
-from time import sleep
+
 
 class Inimig(pygame.sprite.Sprite):
     def __init__(self, pos_x=1500, pos_y=550):
@@ -58,7 +58,7 @@ class Inimig(pygame.sprite.Sprite):
                 NinjaJumpThrow,
                 NinjaRun,
                 NinjaSlide,
-                NinjaThrow
+                NinjaThrow,
             ]
 
             insert = self.ninjaList[0]
@@ -106,7 +106,6 @@ class Inimig(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.rect = self.image.get_rect()
 
-
         self.rect.x = pos_x
         self.rect.y = pos_y
 
@@ -146,7 +145,7 @@ class Inimig(pygame.sprite.Sprite):
     def dead(self):
         self.left_animation = False
         self.dead_animation = True
-        rival.kill()
+
 
     def runL(self):
         self.run_animation = True
@@ -167,7 +166,6 @@ class Inimig(pygame.sprite.Sprite):
 
         global lifepoint
 
-
         if player.rect.right <= rival.rect.right:
 
             rival.runL()
@@ -176,13 +174,14 @@ class Inimig(pygame.sprite.Sprite):
             rival.run()
 
         if self.rect.colliderect(player.rect):
+
             rival.melee()
             lifepoint -= 1
+
     def update(self, speed):
 
         global lifepoint1
         pygame.draw.rect(screen, color, pygame.Rect(player.rect), 2, 3)
-
 
         left = False
 
@@ -264,20 +263,16 @@ class Inimig(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, left, False)
             self.meleeRect = player.rect
 
-
-
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
-            if int(self.current_sprite_jumpMelee) >= len(
-                    self.NinjaJumpThrow
-            ):
+            if int(self.current_sprite_jumpMelee) >= len(self.NinjaJumpThrow):
                 self.current_sprite_jumpMelee = 0
                 self.jump_melee_animation = False
-            self.image = self.NinjaJumpThrow[int(self.current_sprite_jumpMelee)]
+            self.image = self.NinjaJumpThrow[
+                int(self.current_sprite_jumpMelee)
+            ]
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
-
-
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -323,13 +318,17 @@ class Objects(pygame.sprite.Sprite):
         bullet_rect = self.rect
         pygame.draw.rect(screen, color, pygame.Rect(bullet_rect), 2, 3)
 
-        if bullet_rect.colliderect(rival.rect):
-            lifepoint1 -= 1
-            objects.kill()
-            rival.rect.right += 5
+    #Objetcs colliderects
 
-            if lifepoint1 == 0:
-                rival.dead()
+        if bullet_rect.colliderect(rival.rect):
+            sound.load(dano)
+            sound.play()
+            lifepoint1 -= 1
+            rival.rect.right += 50
+            objects.kill()
+
+    # _____________________________________
+
 
         if pos_player:
             self.rect.right -= 10
@@ -348,6 +347,7 @@ class Objects(pygame.sprite.Sprite):
         self.image = self.spritesBullet[int(self.current_sprite_bullet)]
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
+
 
 
 class Player(pygame.sprite.Sprite):
@@ -385,18 +385,23 @@ class Player(pygame.sprite.Sprite):
 
         for r in range(0, 10):
 
-
             self.white = 'WhiteRobot'
             self.black = 'BlackRobot'
-            self.robot_select = self.white
+            self.robot_select = self.black
             robot_Run = f'png/Players/{self.robot_select}/Run ({b}).png'
             robot_Dead = f'png/Players/{self.robot_select}/Dead ({b}).png'
             robot_Idle = f'png/Players/{self.robot_select}/Idle ({b}).png'
             robot_Jump = f'png/Players/{self.robot_select}/Jump ({b}).png'
-            robot_Jump_Melee = f'png/Players/{self.robot_select}/JumpMelee ({b}).png'
-            robot_Jump_Shoot = f'png/Players/{self.robot_select}/JumpShoot ({b}).png'
+            robot_Jump_Melee = (
+                f'png/Players/{self.robot_select}/JumpMelee ({b}).png'
+            )
+            robot_Jump_Shoot = (
+                f'png/Players/{self.robot_select}/JumpShoot ({b}).png'
+            )
             robot_Melee = f'png/Players/{self.robot_select}/Melee ({b}).png'
-            robot_Run_Shoot = f'png/Players/{self.robot_select}/RunShoot ({b}).png'
+            robot_Run_Shoot = (
+                f'png/Players/{self.robot_select}/RunShoot ({b}).png'
+            )
             robot_Shoot = f'png/Players/{self.robot_select}/Shoot ({b}).png'
             robot_Slide = f'png/Players/{self.robot_select}/Slide ({b}).png'
 
@@ -599,12 +604,16 @@ class Player(pygame.sprite.Sprite):
                 self.melee_animation = False
             self.image = self.spritesMelee[int(self.current_sprite_melee)]
             self.image = pygame.transform.flip(self.image, left, False)
-            self.meleeRect = player.rect
+            self.meleeRect = self.image.get_rect()
+            if self.meleeRect.colliderect(rival.rect):
+                sound.load(meleesound)
+                sound.play()
+                lifepoint1 -= 1
 
         if self.jump_melee_animation:
             self.current_sprite_jumpMelee += speed
             if int(self.current_sprite_jumpMelee) >= len(
-                    self.current_sprite_jumpMelee
+                self.current_sprite_jumpMelee
             ):
                 self.current_sprite_jumpMelee = 0
                 self.jump_melee_animation = False
@@ -614,6 +623,15 @@ class Player(pygame.sprite.Sprite):
 
 
 pygame.init()
+
+pygame.mixer.init()
+dano = 'sounds/mixkit-boxer-getting-hit-2055.wav'
+gameover = 'sounds/mixkit-player-losing-or-failing-2042.wav'
+meleesound = 'sounds/mixkit-martial-arts-fast-punch-2047.wav'
+sound = pygame.mixer.music
+
+
+
 
 clock = pygame.time.Clock()
 largura, altura = 1000, 768
@@ -630,7 +648,6 @@ color = 255, 255, 255
 colorRed = 255, 0, 0
 
 txt = 'Life Bar '
-
 
 
 pygame.font.init()
@@ -650,24 +667,25 @@ rival = Inimig(500, 550)
 
 moving_sprites.add(player, rival)
 
-
-
-
 while True:
     txttela = fontesys.render(f'{lifepoint}', 100, (color))
     txttela1 = fontesys.render(f'{lifepoint1}', 100, (color))
     objects = Objects(player.rect[0], player.rect[1])
-    if lifepoint1 == 0:
-        rival.dead()
 
+    player.idle()
+    rival.idle()
+    rival.rundead()
+
+    if lifepoint1 == 0:
+        sound.load(gameover)
+        sound.play()
 
     if lifepoint == 0:
         player.dead()
+        sound.load(gameover)
+        sound.play()
 
     for event in pygame.event.get():
-        player.idle()
-        rival.idle()
-        rival.rundead()
 
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -692,9 +710,6 @@ while True:
             if control[pygame.K_d] and control[pygame.K_SPACE]:
                 player.jump()
 
-            if control[pygame.K_g]:
-                player.alternat(r=True, value=2)
-
             if control[pygame.K_h]:
                 player.shoot()
                 objects.bullet()
@@ -717,20 +732,20 @@ while True:
             if control[pygame.K_f]:
                 player.melee()
 
-        if player.rect.right >= largura:
-            player.rect.right = largura
-            back_pos = 1, 0
+    if player.rect.right >= largura:
+        player.rect.right = largura
+        back_pos = 1, 0
 
-        if player.rect.right <= largura - largura:
-            player.rect.right = 90
-            back_pos = -1, 0
+    if player.rect.right <= largura - largura:
+        player.rect.right = 90
+        back_pos = -1, 0
 
     screen.blit(back, (back_pos))
     moving_sprites.draw(screen)
     pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
     bar = pygame.draw.rect(screen, colorRed, [550, 0, lifepoint1, 40])
     screen.blit(txttela, [0, 0])
-    screen.blit(txttela1, [largura-40, 0])
+    screen.blit(txttela1, [largura - 40, 0])
 
     moving_sprites.update(0.25)
     clock.tick(60)
