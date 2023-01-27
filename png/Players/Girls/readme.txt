@@ -1,0 +1,1 @@
+This has been left as is since this is how the dev tools rip it and means that you can drop this into the "Wonder Boy The Dragon's Trap\bin_pc\tex\HeroHugirl" folder and reimport them just fine
