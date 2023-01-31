@@ -1,5 +1,33 @@
 import sys, pygame
 
+class Menu(pygame.sprite.Sprite):
+    def __init__(self, pos_x=0, pos_y=0, tamL=100, tamA=550):
+        super().__init__()
+
+        difficult = pygame.image.load('png/Menu/difficult.png')
+        level = pygame.image.load('png/Menu/level.png')
+        level2 = pygame.image.load('png/Menu/level2.png')
+        life = pygame.image.load('png/Menu/life.png')
+        options = pygame.image.load('png/Menu/Options.png')
+        paused = pygame.image.load('png/Menu/Paused.png')
+        power = pygame.image.load('png/Menu/power.png')
+        menu = []
+
+        menu.append(life)
+        menu_current = 0
+
+        lifebar = pygame.Rect(pos_x, 300, 10, 10)
+        self.image = menu[menu_current]
+        self.image = pygame.transform.scale(self.image, (tamA, tamL))
+        self.rect = self.image.get_rect()
+
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
+
+
+
+
 
 class Inimig(pygame.sprite.Sprite):
     def __init__(self, pos_x=1500, pos_y=550):
@@ -273,6 +301,8 @@ class Inimig(pygame.sprite.Sprite):
             ]
             self.image = pygame.transform.flip(self.image, left, False)
         self.image = pygame.transform.scale(self.image, (150, 150))
+
+
 class Objects(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -323,13 +353,15 @@ class Objects(pygame.sprite.Sprite):
         if bullet_rect.colliderect(rival.rect):
             sound.load(dano)
             sound.play()
-            lifepoint1 -= 1
+            lifepoint1 -= 100
             rival.rect.right += 50
             objects.kill()
+            if lifepoint1 <= 0:
+                rival.dead()
+                rival.rect.right = 10
+
 
     # _____________________________________
-
-
         if pos_player:
             self.rect.right -= 10
 
@@ -387,7 +419,8 @@ class Player(pygame.sprite.Sprite):
 
             self.white = 'WhiteRobot'
             self.black = 'BlackRobot'
-            self.robot_select = self.black
+            self.pink = 'PinkRobot'
+            self.robot_select = self.pink
             robot_Run = f'png/Players/{self.robot_select}/Run ({b}).png'
             robot_Dead = f'png/Players/{self.robot_select}/Dead ({b}).png'
             robot_Idle = f'png/Players/{self.robot_select}/Idle ({b}).png'
@@ -549,7 +582,6 @@ class Player(pygame.sprite.Sprite):
         if self.jump_animation:
             self.current_sprite_jump += speed
             pos_player = left
-
             if int(self.current_sprite_jump) >= len(self.spritesJ):
                 self.current_sprite_jump = 0
                 self.jump_animation = False
@@ -638,7 +670,7 @@ largura, altura = 1000, 768
 tamanho_da_tela = largura, altura
 screen = pygame.display.set_mode(tamanho_da_tela)
 back = pygame.image.load('png/back.jpg')
-life = pygame.Rect(0, 0, 10, 10)
+
 back = pygame.transform.scale(back, (1360, 768))
 back_rect = back.get_rect()
 back_pos = 0, 0
@@ -646,9 +678,6 @@ back_pos = 0, 0
 pygame.display.set_caption('Game Robot')
 color = 255, 255, 255
 colorRed = 255, 0, 0
-
-txt = 'Life Bar '
-
 
 pygame.font.init()
 
@@ -665,7 +694,9 @@ player = Player(0, 550)
 
 rival = Inimig(500, 550)
 
-moving_sprites.add(player, rival)
+lifebar = Menu(0, 0, 80, lifepoint)
+lifebar2 = Menu(500, 0, 80, lifepoint1)
+moving_sprites.add(player, rival, lifebar, lifebar2)
 
 while True:
     txttela = fontesys.render(f'{lifepoint}', 100, (color))
@@ -677,6 +708,7 @@ while True:
     rival.rundead()
 
     if lifepoint1 == 0:
+        player.dead()
         sound.load(gameover)
         sound.play()
 
@@ -684,6 +716,7 @@ while True:
         player.dead()
         sound.load(gameover)
         sound.play()
+        rival.idle()
 
     for event in pygame.event.get():
 
@@ -740,13 +773,17 @@ while True:
         player.rect.right = 90
         back_pos = -1, 0
 
+    moving_sprites.update(0.25)
     screen.blit(back, (back_pos))
+
+    pygame.draw.rect(screen, colorRed, [50, 17, lifepoint-100, 40])
+    bar = pygame.draw.rect(screen, colorRed, [550, 17, lifepoint1, 40])
     moving_sprites.draw(screen)
-    pygame.draw.rect(screen, colorRed, [0, 0, lifepoint, 40])
-    bar = pygame.draw.rect(screen, colorRed, [550, 0, lifepoint1, 40])
+
+
     screen.blit(txttela, [0, 0])
     screen.blit(txttela1, [largura - 40, 0])
 
-    moving_sprites.update(0.25)
+
     clock.tick(60)
     pygame.display.update()
