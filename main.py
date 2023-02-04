@@ -1,4 +1,6 @@
 import sys, pygame
+from random import randint
+
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self, pos_x=0, pos_y=0, tamL=100, tamA=550):
@@ -11,22 +13,33 @@ class Menu(pygame.sprite.Sprite):
         options = pygame.image.load('png/Menu/Options.png')
         paused = pygame.image.load('png/Menu/Paused.png')
         power = pygame.image.load('png/Menu/power.png')
-        menu = []
 
-        menu.append(life)
+
+        difficultLayout = []
+        levelLayout = []
+        level2Layout = []
+        lifeLayout = []
+        optionsLayout = []
+        pausedLayout = []
+        powerLayout = []
+
+        levelLayout.append(level)
+        level2Layout.append(level2)
+        difficultLayout.append(difficult)
+        lifeLayout.append(life)
+        optionsLayout.append(options)
+        pausedLayout.append(paused)
+        powerLayout.append(power)
+
         menu_current = 0
 
-        lifebar = pygame.Rect(pos_x, 300, 10, 10)
-        self.image = menu[menu_current]
+
+        self.image = lifeLayout[menu_current]
         self.image = pygame.transform.scale(self.image, (tamA, tamL))
         self.rect = self.image.get_rect()
 
         self.rect.x = pos_x
         self.rect.y = pos_y
-
-
-
-
 
 
 class Inimig(pygame.sprite.Sprite):
@@ -174,7 +187,6 @@ class Inimig(pygame.sprite.Sprite):
         self.left_animation = False
         self.dead_animation = True
 
-
     def runL(self):
         self.run_animation = True
         self.left_animation = True
@@ -195,15 +207,13 @@ class Inimig(pygame.sprite.Sprite):
         global lifepoint
 
         if player.rect.right <= rival.rect.right:
-
             rival.runL()
 
         if player.rect.right >= rival.rect.right:
             rival.run()
 
         if self.rect.colliderect(player.rect):
-
-            rival.melee()
+            rival.shoot()
             lifepoint -= 1
 
     def update(self, speed):
@@ -243,7 +253,6 @@ class Inimig(pygame.sprite.Sprite):
 
         if self.NinjaThrow_animation:
             self.current_sprite += speed
-
             if int(self.current_sprite) >= len(self.NinjaThrow):
                 self.current_sprite = 0
                 self.runshoot_animation = False
@@ -311,21 +320,13 @@ class Objects(pygame.sprite.Sprite):
 
         self.bullet_animation = False
         self.spritesBullet = []
-        self.spritesBullet.append(
-            pygame.image.load('png/Objects/Bullet_000.png')
-        )
-        self.spritesBullet.append(
-            pygame.image.load('png/Objects/Bullet_001.png')
-        )
-        self.spritesBullet.append(
-            pygame.image.load('png/Objects/Bullet_002.png')
-        )
-        self.spritesBullet.append(
-            pygame.image.load('png/Objects/Bullet_003.png')
-        )
-        self.spritesBullet.append(
-            pygame.image.load('png/Objects/Bullet_004.png')
-        )
+        b = 0
+        for c in range(b, 3):
+            b += 1
+            bulletPath = f'Bullet_00{b}.png'
+            self.spritesBullet.append(
+                pygame.image.load(f'png/Objects/{bulletPath}')
+            )
 
         self.current_sprite_bullet = 0
         self.left_animation = False
@@ -338,6 +339,8 @@ class Objects(pygame.sprite.Sprite):
         if pos_player:
             self.rect.x = pos_x - 10
 
+
+
     def bullet(self):
         moving_sprites.add(objects)
 
@@ -348,20 +351,24 @@ class Objects(pygame.sprite.Sprite):
         bullet_rect = self.rect
         pygame.draw.rect(screen, color, pygame.Rect(bullet_rect), 2, 3)
 
-    #Objetcs colliderects
+        # Objetcs colliderects
 
         if bullet_rect.colliderect(rival.rect):
-            sound.load(dano)
-            sound.play()
-            lifepoint1 -= 100
-            rival.rect.right += 50
-            objects.kill()
+
+
+            lifepoint1 -= 1
+            if pos_player:
+                rival.rect.right -= 5
+            else:
+                rival.rect.right += 5
+
             if lifepoint1 <= 0:
+                sound.load(dano)
+                sound.play()
                 rival.dead()
-                rival.rect.right = 10
+                rival.rect.right = randint(0, largura)
+                lifepoint1 = 500
 
-
-    # _____________________________________
         if pos_player:
             self.rect.right -= 10
 
@@ -379,7 +386,6 @@ class Objects(pygame.sprite.Sprite):
         self.image = self.spritesBullet[int(self.current_sprite_bullet)]
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
-
 
 
 class Player(pygame.sprite.Sprite):
@@ -540,7 +546,8 @@ class Player(pygame.sprite.Sprite):
     def runL(self):
         self.run_animation = True
         self.left_animation = True
-        self.rect.right -= 50
+        for c in self.sprites:
+            self.rect.right -= 5
 
     def vt(self, vt):
         self.rect.left = vt
@@ -548,7 +555,8 @@ class Player(pygame.sprite.Sprite):
     def run(self):
         self.run_animation = True
         self.left_animation = False
-        self.rect.right += 50
+        for c in self.sprites:
+            self.rect.right += 5
 
     def idle(self):
         self.idle_animation = True
@@ -663,8 +671,6 @@ meleesound = 'sounds/mixkit-martial-arts-fast-punch-2047.wav'
 sound = pygame.mixer.music
 
 
-
-
 clock = pygame.time.Clock()
 largura, altura = 1000, 768
 tamanho_da_tela = largura, altura
@@ -686,10 +692,7 @@ lifepoint1 = 500
 
 fonte = pygame.font.get_default_font()
 fontesys = pygame.font.SysFont(fonte, 35)
-
-
 moving_sprites = pygame.sprite.Group()
-
 player = Player(0, 550)
 
 rival = Inimig(500, 550)
@@ -744,14 +747,12 @@ while True:
                 player.jump()
 
             if control[pygame.K_h]:
-                player.shoot()
+                player.runshoot()
                 objects.bullet()
 
             if control[pygame.K_a]:
                 player.runL()
-                if control[pygame.K_h]:
-                    player.runshootL()
-                    objects.bullet()
+                objects.bullet()
 
             if control[pygame.K_d]:
                 player.run()
@@ -776,14 +777,12 @@ while True:
     moving_sprites.update(0.25)
     screen.blit(back, (back_pos))
 
-    pygame.draw.rect(screen, colorRed, [50, 17, lifepoint-100, 40])
-    bar = pygame.draw.rect(screen, colorRed, [550, 17, lifepoint1, 40])
+    pygame.draw.rect(screen, colorRed, [50, 17, lifepoint - 100, 40])
+    bar = pygame.draw.rect(screen, colorRed, [550, 17, lifepoint1 - 100, 40])
     moving_sprites.draw(screen)
-
 
     screen.blit(txttela, [0, 0])
     screen.blit(txttela1, [largura - 40, 0])
-
 
     clock.tick(60)
     pygame.display.update()
