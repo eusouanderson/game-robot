@@ -1,4 +1,5 @@
 import sys, pygame
+import pygame_menu
 from random import randint
 
 
@@ -388,6 +389,9 @@ class Objects(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
 
+
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x=0, pos_y=550):
         super().__init__()
@@ -700,6 +704,21 @@ rival = Inimig(500, 550)
 lifebar = Menu(0, 0, 80, lifepoint)
 lifebar2 = Menu(500, 0, 80, lifepoint1)
 moving_sprites.add(player, rival, lifebar, lifebar2)
+def set_difficulty(value, difficulty):
+    # Do the job here !
+    pass
+
+def start_the_game():
+    # Do the job here !
+    pass
+
+menu = pygame_menu.Menu('Welcome', 400, 300,
+                       theme=pygame_menu.themes.THEME_BLUE)
+
+menu.add.text_input('Name :', default='John Doe')
+menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
+menu.add.button('Play', start_the_game)
+menu.add.button('Quit', pygame_menu.events.EXIT)
 
 while True:
     txttela = fontesys.render(f'{lifepoint}', 100, (color))

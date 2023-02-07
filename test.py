@@ -1,59 +1,85 @@
 import pygame
-import random
+import sys
 
-# GLOBAL VARIABLES
-COLOR = (255, 100, 98)
-SURFACE_COLOR = (167, 255, 100)
-WIDTH = 500
-HEIGHT = 500
-
-
-# Object class
-class Sprite(pygame.sprite.Sprite):
-    def __init__(self, color, height, width):
-        super().__init__()
-
-        self.image = pygame.Surface([width, height])
-        self.image.fill(SURFACE_COLOR)
-        self.image.set_colorkey(COLOR)
-
-        pygame.draw.rect(self.image, color, pygame.Rect(0, 0, width, height))
-
-        self.rect = self.image.get_rect()
-
-
+# initializing the constructor
 pygame.init()
 
-RED = (255, 0, 0)
+# screen resolution 
+res = (720, 720)
 
-size = (WIDTH, HEIGHT)
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Creating Sprite")
+# opens up a window 
+screen = pygame.display.set_mode(res)
 
-all_sprites_list = pygame.sprite.Group()
+# white color 
+color = (255, 255, 255)
 
-object_ = Sprite(RED, 50, 30)
-object_.rect.x = 200
-object_.rect.y = 300
+# light shade of the button 
+color_light = (170, 170, 170)
 
-all_sprites_list.add(object_)
+# dark shade of the button 
+color_dark = (100, 100, 100)
 
-exit = True
-clock = pygame.time.Clock()
+# stores the width of the 
+# screen into a variable 
+width = screen.get_width()
 
-while exit:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            exit = False
+# stores the height of the 
+# screen into a variable 
+height = screen.get_height()
 
-    all_sprites_list.update()
-    screen.fill(SURFACE_COLOR)
-    all_sprites_list.draw(screen)
-    pygame.display.flip()
-    clock.tick(60)
-ninja = 'png/Attack__00'
-lista = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-robot = f'png/Run ({lista[1]}).png'
-print(robot)
+# defining a font 
+smallfont = pygame.font.SysFont('Corbel', 35)
 
-pygame.quit()
+# rendering a text written in 
+# this font 
+text = smallfont.render('quit', True, color)
+text2 = smallfont.render('Menu', True, color)
+text_rect = text.get_rect()
+text2_rect = text2.get_rect()
+
+
+
+
+
+while True:
+
+
+    for ev in pygame.event.get():
+        mouse = pygame.mouse.get_pos()
+        mouse_rect = pygame.draw.rect(screen, color_light, [mouse[0], mouse[1], 10, 10])
+
+        if ev.type == pygame.QUIT:
+            pygame.quit()
+
+            # checks if a mouse is clicked
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+
+            # if the mouse is clicked on the
+            # button the game is terminated 
+            if mouse_rect.colliderect(text2_rect):
+                pygame.quit()
+
+                # fills the screen with a color
+    screen.fill((60, 25, 60))
+
+    # stores the (x,y) coordinates into 
+    # the variable as a tuple 
+
+    print(mouse_rect)
+
+
+    # if mouse is hovered on a button it 
+    # changes to lighter shade 
+    if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
+
+        pygame.draw.rect(screen, color_light, [width / 2, height / 2, 140, 40])
+
+    else:
+        pygame.draw.rect(screen, color_dark, [width / 2, height / 2, 140, 40])
+
+        # superimposing the text onto our button
+    screen.blit(text, (width / 2 + 50, height / 2))
+    screen.blit(text2, (width / 150, height / 10))
+
+    # updates the frames of the game 
+    pygame.display.update() 
