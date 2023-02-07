@@ -7,7 +7,7 @@ Criei esse pequeno jogo pelo pygame , para aprimorar meus conhecimentos em pytho
 
 ## Documentation
 
-Use as teclas 'a, s, d e w' para movimentar o personagem , e 'H' para o seu ataque, também tem combinações de teclas com SHIFT e alguma tecla direcional , para escorregar.
+Use as teclas 'a, s, d e w' para movimentar o personagem e espaço para pular, 'H' para o seu ataque, também tem combinações de teclas com SHIFT e alguma tecla direcional , para escorregar.
 
 
 
