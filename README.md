@@ -1,7 +1,7 @@
 # <tittle> Game Robot </tittle>
 
 
-Bem-vindo ao mundo de Game Robot, um emocionante jogo em 2D que irá desafiar suas habilidades e estratégias. Entre em uma aventura eletrizante com um robô inteligente e explore diversos cenários repletos de desafios e enigmas.
+### Bem-vindo ao mundo de Game Robot, um emocionante jogo em 2D que irá desafiar suas habilidades e estratégias. Entre em uma aventura eletrizante com um robô inteligente e explore diversos cenários repletos de desafios e enigmas.
 
 No Game Robot, você controlará um robô altamente avançado, equipado com uma variedade de habilidades e armas. Sua missão é atravessar níveis repletos de obstáculos, inimigos e quebra-cabeças, enquanto busca por pistas e itens que o ajudarão a progredir.
 
@@ -12,6 +12,7 @@ Ao longo da jornada, você encontrará diferentes ambientes, como florestas somb
 Além da emocionante campanha para um jogador, Game Robot também oferece um modo multiplayer, onde você poderá competir contra amigos ou jogadores de todo o mundo. Desafie-se em emocionantes batalhas PvP ou junte-se a outros jogadores para enfrentar desafios cooperativos e ganhar recompensas exclusivas.
 
 Prepare-se para mergulhar em um mundo de ação, estratégia e diversão com Game Robot. Domine suas habilidades, descubra segredos ocultos e prove que você é o melhor piloto de robôs do universo!
+
 ---
 
 
@@ -23,7 +24,7 @@ Use WSAD para movimentar o Robot e F para usar o melee, H para o ataque com bola
 ## Ferramentas
 
 1. Linguagem: [Python](https://www.python.org/) 
-2. Framework: [Tkinter](https://docs.python.org/3/library/tkinter.html)
+2. Framework: [Pygame](https://www.pygame.org/news)
 3. Plataforma de Hospedagem: 
 
 ## Get Started
