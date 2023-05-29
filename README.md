@@ -1,4 +1,4 @@
-# <tittle> Game Robot </tittle>
+# <tittle> Game Robt </tittle>
 
 
 ### Bem-vindo ao mundo de Game Robot, um emocionante jogo em 2D que irá desafiar suas habilidades e estratégias. Entre em uma aventura eletrizante com um robô inteligente e explore diversos cenários repletos de desafios e enigmas.
