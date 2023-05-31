@@ -1,3 +1,7 @@
+import pygame
+from main import Player, Inimig, Menu
+
+
 pygame.init()
 
 pygame.mixer.init()
@@ -5,8 +9,6 @@ dano = 'sounds/mixkit-boxer-getting-hit-2055.wav'
 gameover = 'sounds/mixkit-player-losing-or-failing-2042.wav'
 meleesound = 'sounds/mixkit-martial-arts-fast-punch-2047.wav'
 sound = pygame.mixer.music
-
-
 
 
 clock = pygame.time.Clock()

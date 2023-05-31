@@ -38,9 +38,6 @@ text_rect = text.get_rect()
 text2_rect = text2.get_rect()
 
 
-
-
-
 while True:
 
 
