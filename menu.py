@@ -53,7 +53,7 @@ while True:
 
             # if the mouse is clicked on the
             # button the game is terminated 
-            if mouse_rect.colliderect(text2_rect):
+            if mouse_rect.colliderect(text_rect):
                 pygame.quit()
 
                 # fills the screen with a color

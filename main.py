@@ -3,6 +3,7 @@ import pygame_menu
 from random import randint
 
 
+# Componentes do menu do Game
 class Menu(pygame.sprite.Sprite):
     def __init__(self, pos_x=0, pos_y=0, tamL=100, tamA=550):
         super().__init__()
@@ -33,7 +34,6 @@ class Menu(pygame.sprite.Sprite):
         powerLayout.append(power)
 
         menu_current = 0
-
 
         self.image = lifeLayout[menu_current]
         self.image = pygame.transform.scale(self.image, (tamA, tamL))
@@ -150,20 +150,26 @@ class Inimig(pygame.sprite.Sprite):
 
         self.rect.x = pos_x
         self.rect.y = pos_y
+# Funçoes de animaaçoes
 
+    #Melee
     def melee(self):
         self.melee_animation = True
 
+    #Run Shoot Right
     def runshoot(self):
         self.left_animation = False
         self.runshoot_animation = True
-        self.rect.right += 10
+        self.rect.right += 100
 
+
+    #Run Shoot Left
     def runshootL(self):
         self.left_animation = False
         self.runshoot_animation = True
         self.rect.right -= 10
 
+    # Shoot
     def shoot(self):
         self.shoot_animation = True
 
@@ -189,9 +195,7 @@ class Inimig(pygame.sprite.Sprite):
         self.dead_animation = True
 
     def runL(self):
-        self.run_animation = True
-        self.left_animation = True
-        self.rect.right -= 5
+        pass
 
     def run(self):
         self.run_animation = True
@@ -341,7 +345,6 @@ class Objects(pygame.sprite.Sprite):
             self.rect.x = pos_x - 10
 
 
-
     def bullet(self):
         moving_sprites.add(objects)
 
@@ -387,9 +390,6 @@ class Objects(pygame.sprite.Sprite):
         self.image = self.spritesBullet[int(self.current_sprite_bullet)]
         self.image = pygame.transform.flip(self.image, pos_player, False)
         self.image = pygame.transform.scale(self.image, (50, 50))
-
-
-
 
 
 class Player(pygame.sprite.Sprite):
@@ -550,7 +550,7 @@ class Player(pygame.sprite.Sprite):
     def runL(self):
         self.run_animation = True
         self.left_animation = True
-        for c in self.sprites:
+        for value in self.sprites:
             self.rect.right -= 5
 
     def vt(self, vt):
@@ -674,11 +674,11 @@ gameover = 'sounds/mixkit-player-losing-or-failing-2042.wav'
 meleesound = 'sounds/mixkit-martial-arts-fast-punch-2047.wav'
 sound = pygame.mixer.music
 
-
 clock = pygame.time.Clock()
 largura, altura = 1000, 768
 tamanho_da_tela = largura, altura
 screen = pygame.display.set_mode(tamanho_da_tela)
+
 back = pygame.image.load('png/back.jpg')
 
 back = pygame.transform.scale(back, (1360, 768))
@@ -690,20 +690,22 @@ color = 255, 255, 255
 colorRed = 255, 0, 0
 
 pygame.font.init()
-
 lifepoint = 500
 lifepoint1 = 500
-
 fonte = pygame.font.get_default_font()
 fontesys = pygame.font.SysFont(fonte, 35)
+
+#Montando um grupo de Sprites
 moving_sprites = pygame.sprite.Group()
+
 player = Player(0, 550)
-
 rival = Inimig(500, 550)
-
 lifebar = Menu(0, 0, 80, lifepoint)
 lifebar2 = Menu(500, 0, 80, lifepoint1)
+
+# Adicionando Sprites nogrupo Moving
 moving_sprites.add(player, rival, lifebar, lifebar2)
+
 def set_difficulty(value, difficulty):
     # Do the job here !
     pass
@@ -720,14 +722,16 @@ menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_diffi
 menu.add.button('Play', start_the_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
 
+
 while True:
+
     txttela = fontesys.render(f'{lifepoint}', 100, (color))
     txttela1 = fontesys.render(f'{lifepoint1}', 100, (color))
     objects = Objects(player.rect[0], player.rect[1])
 
-    player.idle()
+ 
     rival.idle()
-    rival.rundead()
+    #rival.rundead()
 
     if lifepoint1 == 0:
         player.dead()
@@ -766,28 +770,29 @@ while True:
                 player.jump()
 
             if control[pygame.K_h]:
-                player.runshoot()
+                player.shoot()
                 objects.bullet()
 
             if control[pygame.K_a]:
                 player.runL()
-                objects.bullet()
 
             if control[pygame.K_d]:
                 player.run()
-                if control[pygame.K_h]:
-                    player.runshoot()
-                    objects.bullet()
+
+            if control[pygame.K_d] and control[pygame.K_h]:
+                player.runshoot()
 
             if control[pygame.K_SPACE]:
                 player.jump()
 
             if control[pygame.K_f]:
                 player.melee()
+            else:
+                player.idle()
 
     if player.rect.right >= largura:
         player.rect.right = largura
-        back_pos = 1, 0
+        back_pos = +1, 0
 
     if player.rect.right <= largura - largura:
         player.rect.right = 90
